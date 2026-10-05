@@ -1,0 +1,82 @@
+---
+import { pixelPaths } from '../lib/pixel';
+import { character, characterPalette, characterSize } from '../data/sprites';
+
+interface Props {
+  /** `bust` crops the same sprite to head and shoulders. */
+  crop?: 'full' | 'bust';
+  /** Includes the side and back views; only the travelling actor needs them. */
+  walks?: boolean;
+  label?: string;
+  class?: string;
+}
+
+const { crop = 'full', walks = false, label, class: className } = Astro.props;
+const layer = (map: string[]) => pixelPaths(map, characterPalette).paths;
+const height = crop === 'bust' ? characterSize.bust : characterSize.height;
+---
+
+<svg
+  class:list={['character', className]}
+  viewBox={`0 0 ${characterSize.width} ${height}`}
+  shape-rendering="crispEdges"
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  data-character
+  data-frame="idle"
+>
+  {
+    Object.entries(character.front).map(([name, pose]) => (
+      <g class:list={['character__pose', { 'is-on': name === 'idle' }]} data-f={name} set:html={layer(pose)} />
+    ))
+  }
+  <g class="character__head">
+    <Fragment set:html={layer(character.head)} />
+    <g class="character__blink" set:html={layer(character.blink)} />
+  </g>
+  {
+    walks &&
+      Object.entries(character.whole).map(([name, pose]) => (
+        <g class="character__pose character__pose--whole" data-f={name} set:html={layer(pose)} />
+      ))
+  }
+</svg>
+
+<style>
+  /* One pose shows at a time; scripts switch it with `pose()` */
+  .character__pose {
+    display: none;
+  }
+
+  .character__pose.is-on {
+    display: inline;
+  }
+
+  /* Whole figures carry their own head */
+  .character:has(.character__pose--whole.is-on) .character__head {
+    display: none;
+  }
+
+  /* Idle loop, trainer-sprite style: the head bobs one pixel and the eyes blink now and then. */
+  .character__head {
+    animation: bob-head 1.8s steps(1) infinite;
+  }
+
+  .character__blink {
+    opacity: 0;
+    animation: blink-eyes 4.2s steps(1) infinite;
+  }
+
+  @keyframes bob-head {
+    50% {
+      transform: translateY(1px);
+    }
+  }
+
+  @keyframes blink-eyes {
+    94% {
+      opacity: 1;
+    }
+  }
+</style>

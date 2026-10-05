@@ -1,0 +1,113 @@
+---
+/* The hero's soft stains, carried down the page: each section gets its own scatter, drifting slowly */
+type Tone = 'accent' | 'olive' | 'sky' | 'ochre' | 'plum';
+
+interface Blob {
+  path: 0 | 1 | 2;
+  tone: Tone;
+  /* CSS for where it sits and how big it is */
+  at: string;
+  opacity: number;
+  /* How far it wanders: x, y, turn, and how long one round takes */
+  drift: [string, string, string, number];
+}
+
+interface Ring {
+  at: string;
+  turn: number;
+}
+
+interface Props {
+  variant: 'about' | 'skills' | 'projects' | 'contact';
+}
+
+const paths = [
+  'M43 -58C57 -47 70 -35 76 -19C82 -3 81 16 72 32C63 47 47 59 29 67C11 75 -9 79 -27 73C-45 67 -61 52 -70 34C-79 16 -81 -5 -74 -23C-67 -41 -51 -56 -33 -66C-15 -76 5 -81 22 -76C31 -73 36 -64 43 -58Z',
+  'M48 -62C61 -52 69 -36 73 -19C77 -2 77 16 69 30C61 44 45 54 28 62C11 70 -7 76 -24 72C-41 68 -57 54 -66 37C-75 20 -77 0 -72 -18C-67 -36 -55 -52 -40 -62C-25 -72 -7 -76 9 -75C25 -74 35 -72 48 -62Z',
+  'M39 -66C52 -60 66 -52 73 -39C80 -26 80 -9 76 7C72 23 64 38 52 50C40 62 24 71 7 73C-10 75 -28 70 -43 60C-58 50 -70 35 -75 18C-80 1 -78 -18 -69 -33C-60 -48 -44 -59 -28 -66C-12 -73 4 -76 18 -74C26 -73 32 -69 39 -66Z',
+];
+
+const sets: Record<Props['variant'], { blobs: Blob[]; ring?: Ring }> = {
+  about: {
+    blobs: [
+      { path: 2, tone: 'olive', at: 'width:min(34vw,24rem);right:-8vw;top:-6%', opacity: 0.15, drift: ['-20%', '33%', '37deg', 27] },
+      { path: 0, tone: 'ochre', at: 'width:min(24vw,16rem);left:-6vw;bottom:2%', opacity: 0.16, drift: ['24%', '-24%', '-48deg', 34] },
+    ],
+    ring: { at: 'width:5.5rem;right:14%;bottom:12%', turn: 35 },
+  },
+  skills: {
+    blobs: [
+      { path: 1, tone: 'sky', at: 'width:min(38vw,27rem);left:-10vw;top:8%', opacity: 0.14, drift: ['24%', '29%', '-32deg', 30] },
+      { path: 2, tone: 'accent', at: 'width:min(22vw,15rem);right:-5vw;bottom:-3%', opacity: 0.14, drift: ['-33%', '-20%', '53deg', 24] },
+    ],
+  },
+  projects: {
+    blobs: [
+      { path: 0, tone: 'plum', at: 'width:min(30vw,21rem);right:-7vw;top:14%', opacity: 0.13, drift: ['-24%', '24%', '42deg', 29] },
+      { path: 1, tone: 'olive', at: 'width:min(26vw,18rem);left:-8vw;top:52%', opacity: 0.15, drift: ['29%', '-24%', '-37deg', 36] },
+      { path: 2, tone: 'ochre', at: 'width:min(18vw,12rem);right:8%;bottom:-4%', opacity: 0.13, drift: ['-16%', '-33%', '58deg', 23] },
+    ],
+    ring: { at: 'width:6rem;left:9%;top:9%', turn: 40 },
+  },
+  contact: {
+    blobs: [
+      { path: 1, tone: 'accent', at: 'width:min(40vw,28rem);right:-9vw;bottom:-12%', opacity: 0.2, drift: ['-24%', '-24%', '32deg', 32] },
+      { path: 2, tone: 'sky', at: 'width:min(24vw,16rem);left:-6vw;top:6%', opacity: 0.14, drift: ['24%', '24%', '-42deg', 26] },
+    ],
+  },
+};
+
+const { variant } = Astro.props;
+const { blobs, ring } = sets[variant];
+---
+
+<div class="blobs" aria-hidden="true">
+  {
+    blobs.map(({ path, tone, at, opacity, drift: [dx, dy, dr, time] }, i) => (
+      <svg
+        class="blobs__blob drift"
+        viewBox="0 0 200 200"
+        style={`${at};fill:var(--${tone});opacity:${opacity};--dx:${dx};--dy:${dy};--dr:${dr};--drift-time:${time}s;animation-delay:${-time * 0.37 * (i + 1)}s`}
+      >
+        <path d={paths[path]} transform="translate(100 100)" />
+      </svg>
+    ))
+  }
+  {
+    ring && (
+      <svg class="blobs__ring spin" viewBox="0 0 120 120" style={`${ring.at};--spin-time:${ring.turn}s`}>
+        <path d="M10 60C10 30 30 10 60 10S110 30 110 60S90 110 60 110" fill="none" stroke-width="3" stroke-linecap="round" />
+      </svg>
+    )
+  }
+</div>
+
+<style>
+  /* Behind everything else in the section, but in front of the section's own background */
+  :global(.section:has(> .blobs)) {
+    isolation: isolate;
+  }
+
+  .blobs {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .blobs svg {
+    position: absolute;
+  }
+
+  .blobs__ring {
+    stroke: currentColor;
+    opacity: 0.2;
+  }
+
+  @media (max-width: 55rem) {
+    .blobs__ring {
+      display: none;
+    }
+  }
+</style>

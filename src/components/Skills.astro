@@ -1,0 +1,118 @@
+---
+import Blobs from './Blobs.astro';
+import { useTranslations, type Lang } from '../i18n/ui';
+import TechBadge from './TechBadge.astro';
+import { certifications, skillGroups } from '../data/content';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="skills section" id="skills">
+  <Blobs variant="skills" />
+  <div class="stage-prop ladder skills__ladder" data-lane="right" aria-hidden="true"></div>
+  <div class="wrap">
+    <header class="section-head" data-reveal>
+      <p class="px section-label">{t('skills.label')}</p>
+      <h2 class="section-title">{t('skills.title')}</h2>
+    </header>
+
+    <div class="skills__panel window" data-reveal>
+      {
+        skillGroups.map((group) => (
+          <div class="skills__row">
+            <h3 class="px skills__type" style={`--type: var(--${group.color})`}>
+              <span class="sr-only">{t('skills.type')}: </span>
+              {group.type[lang]}
+            </h3>
+            <ul class="px skills__list">
+              {group.skills.map((skill) => (
+                <TechBadge name={skill} />
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="px skills__cert" data-reveal>
+      <span class="skills__medal" aria-hidden="true"></span>
+      {t('skills.cert')}: {certifications.join(' · ')}
+    </p>
+  </div>
+</section>
+
+<style>
+  /* The ladder from the journey runs past, down to the floor under this section */
+  .skills__ladder {
+    top: 0;
+    bottom: 0;
+  }
+
+  .skills__panel {
+    padding: 0.75rem 1.5rem;
+  }
+
+  .skills__row {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding-block: 0.9rem;
+  }
+
+  .skills__row + .skills__row {
+    border-top: 2px dotted var(--rule);
+  }
+
+  .skills__type {
+    justify-self: start;
+    min-width: 8.5rem;
+    padding: 0.2rem 0.7rem;
+    border-radius: 4px;
+    text-align: center;
+    /* Like the tech badges, it keeps its colours when the theme changes */
+    --ink: #191918;
+    --paper: #fffdf8;
+    color: var(--paper);
+    /* Darkened so the paper-coloured label keeps AA contrast on every type colour */
+    background: color-mix(in srgb, var(--type) 78%, var(--ink));
+    box-shadow: inset 0 -3px 0 rgba(25, 25, 24, 0.25);
+  }
+
+  .skills__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    font-size: 1.125rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+
+  .skills__cert {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 1.75rem;
+    color: var(--ink-2);
+  }
+
+  .skills__medal {
+    flex: none;
+    width: 0.9rem;
+    height: 0.9rem;
+    background: var(--ochre);
+    border: 2px solid var(--ink);
+    transform: rotate(45deg);
+  }
+
+  @media (max-width: 40rem) {
+    .skills__row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

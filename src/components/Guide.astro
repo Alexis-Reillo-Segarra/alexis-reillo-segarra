@@ -1,0 +1,217 @@
+---
+import Character from './Character.astro';
+import { pixelPaths } from '../lib/pixel';
+import { canopy, characterPalette } from '../data/sprites';
+import { useTranslations, type Lang, type UiKey } from '../i18n/ui';
+import { journey } from '../data/content';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const keys = ['hero', 'about', 'journey', 'skills', 'projects', 'contact', 'next'];
+const lines = Object.fromEntries([
+  ...keys.map((key) => [key, t(`guide.${key}` as UiKey)]),
+  ...journey.map((stop, i) => [`stop-${i}`, stop.comment[lang]]),
+]);
+const dome = pixelPaths(canopy, characterPalette);
+// Lines from the canopy's rim down to the two raised hands (canopy is 96 wide, the sprite 64).
+const cords = [2, 24, 48, 70, 92].map((x) => ({ x, to: x < 48 ? 23 : 73 }));
+---
+
+<div class="guide is-hidden" data-guide data-lines={JSON.stringify(lines)}>
+  <p class="bubble" data-bubble="guide" aria-hidden="true"></p>
+  <div class="guide__body" data-guide-body>
+    <svg class="guide__canopy" viewBox="0 0 96 68" shape-rendering="crispEdges" aria-hidden="true">
+      {cords.map((cord) => <line x1={cord.x + 1} y1="35" x2={cord.to} y2="68" stroke="currentColor" stroke-width="1" />)}
+      <g set:html={dome.paths} />
+    </svg>
+    <div class="guide__wind" aria-hidden="true">
+      {Array.from({ length: 6 }, () => <i />)}
+    </div>
+    <button class="guide__sprite" type="button" data-guide-repeat data-sfx="none" aria-label={t('guide.repeat')}>
+      <Character walks />
+    </button>
+  </div>
+  <p class="sr-only" role="status" data-guide-live></p>
+</div>
+
+<style>
+  /*
+   * Alexis himself. Without the stage (small screens, reduced motion) he is docked in the bottom
+   * corner. On the stage (`is-stage`) the script moves him every frame along his route down the
+   * page, so everything here is positioned from the top-left corner and driven by transforms: fixed
+   * while the section under him is pinned, laid out in the page itself while it scrolls.
+   */
+  .guide {
+    --px: 1.5px;
+    display: none;
+    position: fixed;
+    right: 0.6rem;
+    bottom: 0.75rem;
+    z-index: 45;
+    width: calc(32 * var(--px));
+    pointer-events: none;
+  }
+
+  .guide.is-on {
+    display: block;
+  }
+
+  .guide.is-hidden {
+    visibility: hidden;
+  }
+
+  .guide.is-stage {
+    top: 0;
+    left: 0;
+    right: auto;
+    bottom: auto;
+    /* He leans with the card while he is still on it */
+    transform-origin: 50% 100%;
+    will-change: transform;
+    visibility: hidden;
+  }
+
+  /* The stage shows him from the moment he is out of the card's picture, whoever is speaking */
+  .guide.is-stage.is-out {
+    visibility: visible;
+  }
+
+  .guide__body {
+    position: relative;
+    transform-origin: 50% 0;
+    will-change: transform;
+  }
+
+  .guide__sprite {
+    display: block;
+    width: 100%;
+    pointer-events: auto;
+  }
+
+  /* Folded away until he jumps, then it snaps open above him */
+  .guide__canopy {
+    display: none;
+    position: absolute;
+    left: calc(-8 * var(--px));
+    bottom: calc(100% - 10 * var(--px));
+    width: calc(48 * var(--px));
+    transform-origin: 50% 100%;
+    transform: scale(0.3, 0.1);
+    visibility: hidden;
+    transition:
+      transform 0.24s steps(4),
+      visibility 0s 0.24s;
+  }
+
+  .guide.is-stage .guide__canopy {
+    display: block;
+  }
+
+  .guide.is-flying .guide__canopy {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.24s steps(4);
+  }
+
+  /* Wind: short streaks rushing up past him while he falls */
+  .guide__wind {
+    display: none;
+    position: absolute;
+    inset: -60% -90% 0;
+  }
+
+  .guide.is-flying .guide__wind {
+    display: block;
+  }
+
+  .guide__wind i {
+    position: absolute;
+    bottom: 0;
+    width: 2px;
+    height: 1.4rem;
+    background: #8a8880;
+    opacity: 0;
+    animation: gust 0.9s linear infinite;
+  }
+
+  .guide__wind i:nth-child(1) { left: 4%; animation-delay: -0.1s; }
+  .guide__wind i:nth-child(2) { left: 22%; animation-delay: -0.55s; height: 0.9rem; }
+  .guide__wind i:nth-child(3) { left: 38%; animation-delay: -0.3s; }
+  .guide__wind i:nth-child(4) { left: 64%; animation-delay: -0.75s; height: 1rem; }
+  .guide__wind i:nth-child(5) { left: 82%; animation-delay: -0.2s; }
+  .guide__wind i:nth-child(6) { left: 96%; animation-delay: -0.6s; height: 0.8rem; }
+
+  @keyframes gust {
+    0% {
+      transform: translate3d(0, 0, 0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: translate3d(0.75rem, -14rem, 0);
+      opacity: 0;
+    }
+  }
+
+  .guide :global(.bubble) {
+    right: calc(100% + 0.9rem);
+    top: 12%;
+    width: max-content;
+    max-width: min(17rem, calc(100vw - 6rem));
+  }
+
+  .guide :global(.bubble)::after {
+    right: -9px;
+    top: 0.9rem;
+    transform: rotate(-45deg);
+  }
+
+  /*
+   * On the stage the bubble floats over his head instead, so it never has to change sides as he
+   * crosses the page: near an edge it only slides along (`--nudge`, set by the script) while its
+   * tail stays on him. It pops up out of the tail.
+   */
+  .guide.is-stage:not(.is-beside) :global(.bubble) {
+    right: auto;
+    top: auto;
+    bottom: calc(100% + 14px);
+    left: 50%;
+    translate: calc(-50% + var(--nudge, 0px)) 0;
+    transform-origin: calc(50% - var(--nudge, 0px)) 100%;
+    transform: translateY(8px) scale(0.85);
+    transition:
+      opacity 0.16s steps(3),
+      transform 0.16s steps(3),
+      visibility 0.16s;
+  }
+
+  .guide.is-stage:not(.is-beside) :global(.bubble.is-open) {
+    transform: none;
+  }
+
+  .guide.is-stage:not(.is-beside) :global(.bubble)::after {
+    right: auto;
+    top: auto;
+    bottom: -9px;
+    left: calc(50% - 6px - var(--nudge, 0px));
+    transform: rotate(45deg);
+  }
+
+  /* Beside him (`is-beside`, or docked): on the left half of the page there is only room on his other side */
+  .guide.is-flipped :global(.bubble) {
+    right: auto;
+    left: calc(100% + 0.9rem);
+  }
+
+  .guide.is-flipped :global(.bubble)::after {
+    right: auto;
+    left: -9px;
+    transform: rotate(135deg);
+  }
+</style>

@@ -1,0 +1,71 @@
+---
+import Base from '../layouts/Base.astro';
+import Intro from './Intro.astro';
+import Hud from './Hud.astro';
+import Hero from './Hero.astro';
+import About from './About.astro';
+import Journey from './Journey.astro';
+import Skills from './Skills.astro';
+import Projects from './Projects.astro';
+import Contact from './Contact.astro';
+import Guide from './Guide.astro';
+import MobileHome from './MobileHome.astro';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<Base lang={lang}>
+  <div class="desktop">
+    <Intro lang={lang} />
+    <Hud lang={lang} />
+    <Guide lang={lang} />
+    <main id="main">
+      <Hero lang={lang} />
+      <About lang={lang} />
+      <Journey lang={lang} />
+      <Skills lang={lang} />
+      <Projects lang={lang} />
+      <Contact lang={lang} />
+    </main>
+  </div>
+  <div class="mobile">
+    <MobileHome lang={lang} />
+  </div>
+</Base>
+
+<style is:global>
+  /*
+   * Two sites in one page: computers get the stage, narrower screens a plain one of their own. The
+   * width is the same one the scripts start at (`Base.astro`).
+   */
+  .desktop {
+    display: none;
+  }
+
+  @media (min-width: 64rem) {
+    .desktop {
+      display: contents;
+    }
+
+    .mobile {
+      display: none;
+    }
+  }
+
+  @media (max-width: 63.99rem) {
+    /* The plain site brings its own skip link, to its own content */
+    body > .skip-link {
+      display: none;
+    }
+
+    /* A window narrowed while the intro was up: the intro is gone with the stage, so the page scrolls */
+    html[data-intro='on'] {
+      overflow: visible;
+    }
+  }
+</style>

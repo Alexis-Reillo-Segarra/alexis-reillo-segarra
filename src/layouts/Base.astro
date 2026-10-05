@@ -1,0 +1,70 @@
+---
+import '@fontsource-variable/newsreader';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/pixelify-sans';
+import '../styles/global.css';
+import { cssCursor } from '../lib/pixel';
+import { handActivePalette, handHotspot, handMap, handPalette } from '../data/sprites';
+import { paths, useTranslations, type Lang } from '../i18n/ui';
+import { profile } from '../data/content';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const title = `${profile.name} — ${profile.role}`;
+const cursorVars = `:root{--cursor-default:${cssCursor(handMap, handPalette, 'auto', handHotspot)};--cursor-active:${cssCursor(handMap, handActivePalette, 'pointer', handHotspot)}}`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={t('meta.description')} />
+    <meta name="theme-color" content="#f5f3ec" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={t('meta.description')} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="alternate" hreflang="es" href={paths.es} />
+    <link rel="alternate" hreflang="en" href={paths.en} />
+    <style set:html={cursorVars}></style>
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        var seen = false;
+        try {
+          seen = sessionStorage.getItem('intro') === 'done';
+        } catch (e) {}
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        /* Seen only skips it when moving between pages (the language switch); a reload plays it again, from the top */
+        try {
+          if (performance.getEntriesByType('navigation')[0].type === 'reload') {
+            seen = false;
+            if (!reduced) history.scrollRestoration = 'manual';
+          }
+        } catch (e) {}
+        /* Narrow screens get the plain site, which has no intro */
+        var plain = !window.matchMedia('(min-width: 64rem)').matches;
+        root.classList.add('js');
+        root.dataset.intro = seen || reduced || plain ? 'done' : 'on';
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t('nav.skip')}</a>
+    <slot />
+    <script>
+      // Everything scripted belongs to the stage. The plain site for narrow screens needs none of it,
+      // so it is only fetched there if the window grows into a wide one.
+      const wide = window.matchMedia('(min-width: 64rem)');
+      const start = () => import('../scripts/main.ts');
+      if (wide.matches) start();
+      else wide.addEventListener('change', start, { once: true });
+    </script>
+  </body>
+</html>

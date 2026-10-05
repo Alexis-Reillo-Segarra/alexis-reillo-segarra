@@ -1,0 +1,527 @@
+/* The colours are registered so the browser can blend from one value to another */
+@property --bg { syntax: '<color>'; inherits: true; initial-value: #f5f3ec; }
+@property --bg-2 { syntax: '<color>'; inherits: true; initial-value: #ebe8dd; }
+@property --paper { syntax: '<color>'; inherits: true; initial-value: #fffdf8; }
+@property --ink { syntax: '<color>'; inherits: true; initial-value: #191918; }
+@property --ink-2 { syntax: '<color>'; inherits: true; initial-value: #5e5d58; }
+@property --rule { syntax: '<color>'; inherits: true; initial-value: rgba(25, 25, 24, 0.14); }
+@property --accent { syntax: '<color>'; inherits: true; initial-value: #cc6b49; }
+@property --accent-ink { syntax: '<color>'; inherits: true; initial-value: #a94f31; }
+@property --accent-inv { syntax: '<color>'; inherits: true; initial-value: #e89a7c; }
+@property --olive { syntax: '<color>'; inherits: true; initial-value: #7a8055; }
+@property --sky { syntax: '<color>'; inherits: true; initial-value: #6a8caf; }
+@property --ochre { syntax: '<color>'; inherits: true; initial-value: #c9963f; }
+@property --plum { syntax: '<color>'; inherits: true; initial-value: #8e6a8a; }
+
+:root {
+  --bg: #f5f3ec;
+  --bg-2: #ebe8dd;
+  --paper: #fffdf8;
+  --ink: #191918;
+  --ink-2: #5e5d58;
+  --rule: color-mix(in srgb, var(--ink) 14%, transparent);
+  --accent: #cc6b49;
+  --accent-ink: #a94f31;
+  /* The accent as lettering on an ink surface */
+  --accent-inv: #e89a7c;
+  --olive: #7a8055;
+  --sky: #6a8caf;
+  --ochre: #c9963f;
+  --plum: #8e6a8a;
+
+  --font-serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-pixel: 'Pixelify Sans Variable', 'Courier New', monospace;
+
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --max: 72rem;
+  --hud-h: 4rem;
+  /* Centre of the side margin, measured from either edge: the lanes Alexis goes down the page in */
+  --lane: calc(max(var(--gutter), (100vw - var(--max)) / 2) / 2);
+  --prop-w: 3.25rem;
+  /* The stage's unit, two pixels of his sprite; the props are drawn on the same grid */
+  --px: 2px;
+
+  transition-property:
+    --bg, --bg-2, --paper, --ink, --ink-2, --rule, --accent, --accent-ink, --accent-inv, --olive, --sky, --ochre, --plum;
+  transition-duration: 2.8s;
+  transition-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+}
+
+/* On the stage the side margins are Alexis's lanes, so they never get narrower than he is */
+@media (min-width: 64rem) {
+  :root {
+    --gutter: 5.5rem;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--hud-h);
+  -webkit-text-size-adjust: 100%;
+}
+
+html[data-intro='on'] {
+  overflow: hidden;
+}
+
+/* The colour behind the page is what shows when the scroll bounces past an edge. Set from script
+   while the dark closing section is on screen, so the bounce at the bottom continues it. */
+html[data-edge='dark'] {
+  background: var(--ink);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Paper grain over the whole page */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  /* Black at this opacity darkens exactly as a multiply blend would, without making the browser blend the whole page on every frame */
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+svg {
+  display: block;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (pointer: fine) {
+  html {
+    cursor: var(--cursor-default);
+  }
+
+  a,
+  button,
+  label,
+  summary,
+  [role='button'],
+  [data-dialog] {
+    cursor: var(--cursor-active);
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 100;
+  padding: 0.5rem 0.9rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-pixel);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* ---------- Shared building blocks ---------- */
+
+.px {
+  font-family: var(--font-pixel);
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section {
+  position: relative;
+  padding: clamp(5rem, 12vh, 9rem) var(--gutter);
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+}
+
+.section-head {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+}
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--accent-ink);
+}
+
+.section-label::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  background: currentColor;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* DS-style window: dark frame, paper gap, accent inner line */
+.window {
+  background: var(--paper);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  box-shadow:
+    inset 0 0 0 3px var(--paper),
+    inset 0 0 0 5px var(--accent),
+    6px 6px 0 color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+/* Selection caret that appears beside the focused/hovered option */
+.caret {
+  position: relative;
+  padding-left: 1.25em;
+}
+
+.caret::before {
+  content: '';
+  position: absolute;
+  left: 0.15em;
+  top: 50%;
+  border: 0.36em solid transparent;
+  border-left: 0.56em solid currentColor;
+  border-right: 0;
+  transform: translateY(-50%);
+  opacity: 0;
+}
+
+.caret:hover::before,
+.caret:focus-visible::before,
+.caret[aria-current='true']::before {
+  opacity: 1;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.55rem 1.1rem 0.55rem 2rem;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+  transition:
+    transform 0.12s steps(2),
+    box-shadow 0.12s steps(2);
+}
+
+.btn.caret::before {
+  left: 0.85em;
+}
+
+.btn--primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn:hover,
+.btn:focus-visible {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+.btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.pixel-art {
+  image-rendering: pixelated;
+}
+
+/* ---------- Dialog (typewriter) ---------- */
+
+.dialog {
+  position: relative;
+  padding: 1.25rem 1.5rem 1.75rem;
+  /* Pressed over and over to move on, which would otherwise select its words */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dialog__text {
+  font-family: var(--font-pixel);
+  font-size: clamp(1.1rem, 2.4vw, 1.45rem);
+  line-height: 1.45;
+  min-height: 2.9em;
+}
+
+.dialog__next {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.65rem;
+  width: 2rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+}
+
+.dialog__next::before {
+  content: '';
+  border: 0.45rem solid transparent;
+  border-top: 0.6rem solid var(--accent);
+  border-bottom: 0;
+  animation: bob 0.7s steps(2) infinite;
+}
+
+.dialog__next::before {
+  opacity: 0;
+}
+
+/* The arrow is tiny, so keyboard focus is drawn around the whole box instead */
+.dialog__next:focus-visible {
+  outline: none;
+}
+
+.dialog:has(.dialog__next:focus-visible) {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.dialog[data-state='waiting'] .dialog__next::before {
+  opacity: 1;
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+/*
+ * The background stains drift and the rings turn, slowly enough to stay in the background. Both use the
+ * standalone translate/rotate/scale properties, so they add to a `transform` set elsewhere (the hero's parallax).
+ */
+.drift {
+  animation: drift var(--drift-time, 30s) ease-in-out infinite;
+}
+
+.spin {
+  animation: spin var(--spin-time, 36s) linear infinite;
+}
+
+/* A loop through two waypoints rather than a straight there-and-back, swelling and shrinking on the way */
+@keyframes drift {
+  33% {
+    translate: var(--dx, 24%) calc(var(--dy, 24%) * 0.3);
+    rotate: calc(var(--dr, 40deg) * 0.5);
+    scale: 1.14;
+  }
+
+  66% {
+    translate: calc(var(--dx, 24%) * 0.2) var(--dy, 24%);
+    rotate: var(--dr, 40deg);
+    scale: 0.92;
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Stage props: what Alexis walks along, climbs and jumps from ---------- */
+
+/* A prop sits in the right-hand lane unless it says `--left` */
+.stage-prop {
+  display: none;
+  position: absolute;
+  right: calc(var(--lane) - var(--prop-w) / 2);
+  width: var(--prop-w);
+  pointer-events: none;
+}
+
+.stage-prop--left {
+  right: auto;
+  left: calc(var(--lane) - var(--prop-w) / 2);
+}
+
+.stage .stage-prop {
+  display: block;
+}
+
+.ladder {
+  border-inline: 3px solid var(--ink);
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(5 * var(--px)),
+    var(--ink) calc(5 * var(--px)) calc(6 * var(--px))
+  );
+}
+
+/* A floor he crosses the page on: the same dashed line as the journey's route, from lane to lane */
+.floor {
+  left: calc(var(--lane) - var(--prop-w) / 2);
+  width: auto;
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ink) 55%, transparent) 0 12px,
+    transparent 12px 20px
+  );
+}
+
+.ledge {
+  height: 6px;
+  right: max(0px, calc(var(--lane) - var(--prop-w) / 2 - 0.75rem));
+  width: calc(var(--prop-w) + 1.5rem);
+  background: var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent-ink);
+}
+
+.ledge.stage-prop--left {
+  right: auto;
+  left: max(0px, calc(var(--lane) - var(--prop-w) / 2 - 0.75rem));
+}
+
+/* ---------- Guide speech bubble ---------- */
+
+.bubble {
+  position: absolute;
+  z-index: 3;
+  padding: 0.6rem 0.8rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+  font-family: var(--font-pixel);
+  font-size: 1rem;
+  line-height: 1.35;
+  -webkit-user-select: none;
+  user-select: none;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.2s steps(2),
+    visibility 0.2s;
+}
+
+.bubble.is-open {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Tail: a rotated square showing two of its borders */
+.bubble::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--paper);
+  border: solid var(--ink);
+  border-width: 0 3px 3px 0;
+}
+
+/* ---------- Scroll reveals (only hidden when JS can show them) ---------- */
+
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

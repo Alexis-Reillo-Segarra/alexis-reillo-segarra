@@ -1,0 +1,188 @@
+---
+import { languages, paths, useTranslations, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const links = [
+  { href: '#about', label: t('nav.about') },
+  { href: '#journey', label: t('nav.journey') },
+  { href: '#skills', label: t('nav.skills') },
+  { href: '#projects', label: t('nav.projects') },
+  { href: '#contact', label: t('nav.contact') },
+];
+---
+
+<header class="hud px">
+  <a class="hud__brand" href="#top" aria-label="Alexis Reillo">AR</a>
+
+  <button class="hud__toggle" type="button" aria-expanded="false" aria-controls="hud-menu" data-menu-toggle>
+    {t('nav.menu')}
+  </button>
+
+  <nav class="hud__menu" id="hud-menu" data-menu aria-label={t('nav.menu')}>
+    <ul class="hud__links">
+      {
+        links.map((link) => (
+          <li>
+            <a class="caret" href={link.href}>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <button class="hud__sound" type="button" aria-pressed="true" data-sound-toggle data-sfx="none">
+      <span class="sr-only">{t('sound.label')}</span>
+      <span aria-hidden="true">SFX</span>
+      <span data-sound-state>ON</span>
+    </button>
+    <ul class="hud__langs">
+      {
+        (Object.keys(languages) as Lang[]).map((code) => (
+          <li>
+            <a
+              href={paths[code]}
+              hreflang={code}
+              lang={code}
+              aria-label={languages[code]}
+              aria-current={code === lang ? 'true' : undefined}
+            >
+              {code}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .hud {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    height: var(--hud-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-inline: var(--gutter);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .hud__brand {
+    display: grid;
+    place-items: center;
+    min-width: 2.75rem;
+    height: 2.25rem;
+    padding-inline: 0.5rem;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 6px;
+  }
+
+  .hud__menu {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .hud__links {
+    display: flex;
+    gap: 1.25rem;
+  }
+
+  .hud__links a,
+  .hud__langs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .hud__langs {
+    display: flex;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .hud__langs a {
+    min-height: 2rem;
+    padding-inline: 0.6rem;
+  }
+
+  .hud__langs a[aria-current='true'] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .hud__sound {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.25rem;
+    padding-inline: 0.6rem;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: inherit;
+  }
+
+  .hud__sound[aria-pressed='false'] {
+    color: var(--ink-2);
+    border-style: dashed;
+  }
+
+  .hud__toggle {
+    display: none;
+    min-height: 2.75rem;
+    padding: 0 0.9rem;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+  }
+
+  @media (max-width: 55rem) {
+    .hud__toggle {
+      display: block;
+    }
+
+    .hud__menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: var(--gutter);
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+      min-width: 14rem;
+      padding: 1rem 1.25rem;
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      border-radius: 12px;
+      box-shadow:
+        inset 0 0 0 3px var(--paper),
+        inset 0 0 0 5px var(--accent),
+        6px 6px 0 color-mix(in srgb, var(--ink) 12%, transparent);
+    }
+
+    .hud__menu.is-open {
+      display: flex;
+    }
+
+    .hud__links {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .hud__langs,
+    .hud__sound {
+      align-self: flex-start;
+    }
+  }
+</style>

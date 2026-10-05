@@ -1,0 +1,155 @@
+---
+import Character from './Character.astro';
+import Dialog from './Dialog.astro';
+import { languages, paths, useTranslations, type Lang } from '../i18n/ui';
+import { profile } from '../data/content';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const lines = [t('intro.line1'), t('intro.line2'), t('intro.line3')];
+---
+
+<div class="intro" data-intro-screen data-phase="title" role="dialog" aria-modal="true" aria-label={profile.name}>
+  <button class="intro__skip px caret" type="button" data-intro-skip data-sfx="back">{t('intro.skip')}</button>
+
+  <div class="intro__title">
+    <Character crop="bust" class="intro__avatar" />
+    <p class="intro__name">{profile.name}</p>
+    <p class="px intro__role">{profile.role}</p>
+    <button class="intro__start px" type="button" data-intro-start data-sfx="start">{t('intro.start')}</button>
+    <nav class="intro__langs px" aria-label={t('intro.language')}>
+      {
+        (Object.keys(languages) as Lang[]).map((code) => (
+          <a class="caret" href={paths[code]} hreflang={code} aria-current={code === lang ? 'true' : undefined}>
+            {languages[code]}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+
+  <div class="intro__talk">
+    <Character class="intro__speaker" />
+    <Dialog lang={lang} lines={lines} manual closable class="intro__dialog" />
+  </div>
+</div>
+
+<style>
+  .intro {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    padding: var(--gutter);
+    background: var(--bg);
+    background-image: radial-gradient(color-mix(in srgb, var(--ink) 9%, transparent) 1.5px, transparent 1.5px);
+    background-size: 16px 16px;
+    place-items: center;
+  }
+
+  :global(html[data-intro='on']) .intro {
+    display: grid;
+  }
+
+  /* A continuous fade, unlike the stepped pixel animations elsewhere: over the whole screen, steps read as stutter */
+  .intro.is-leaving {
+    animation: leave 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    will-change: opacity, transform;
+  }
+
+  @keyframes leave {
+    to {
+      opacity: 0;
+      transform: scale(1.04);
+    }
+  }
+
+  .intro__skip {
+    position: absolute;
+    top: 1.25rem;
+    right: var(--gutter);
+    padding-block: 0.5rem;
+    color: var(--ink-2);
+  }
+
+  .intro__title {
+    display: grid;
+    justify-items: center;
+    gap: 0.9rem;
+    text-align: center;
+  }
+
+  .intro :global(.intro__avatar) {
+    width: 8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .intro__name {
+    font-family: var(--font-serif);
+    font-size: clamp(2.25rem, 8vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .intro__role {
+    color: var(--ink-2);
+  }
+
+  .intro__start {
+    margin-top: 1.75rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 1.25rem;
+    color: var(--accent-ink);
+    animation: blink 1.1s steps(1) infinite;
+  }
+
+  .intro__start:hover,
+  .intro__start:focus-visible {
+    animation: none;
+  }
+
+  .intro__langs {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .intro__langs a {
+    padding-block: 0.5rem;
+    color: var(--ink-2);
+  }
+
+  .intro__langs a[aria-current='true'] {
+    color: var(--ink);
+  }
+
+  .intro__talk {
+    display: none;
+    width: 100%;
+    max-width: 44rem;
+    align-self: end;
+    justify-items: center;
+    gap: 1.5rem;
+    padding-bottom: 4vh;
+  }
+
+  .intro :global(.intro__speaker) {
+    width: clamp(8rem, 24vw, 11rem);
+  }
+
+  .intro__talk :global(.intro__dialog) {
+    width: 100%;
+  }
+
+  .intro[data-phase='talk'] .intro__title {
+    display: none;
+  }
+
+  .intro[data-phase='talk'] .intro__talk {
+    display: grid;
+  }
+</style>

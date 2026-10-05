@@ -1,0 +1,172 @@
+---
+import Blobs from './Blobs.astro';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { profile } from '../data/content';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="contact section" id="contact">
+  <Blobs variant="contact" />
+  <div class="wipe" data-wipe aria-hidden="true">
+    {Array.from({ length: 24 }, () => <span />)}
+  </div>
+  <div class="wrap contact__grid">
+    <header class="section-head" data-reveal>
+      <p class="px section-label">{t('contact.label')}</p>
+      <h2 class="section-title">{t('contact.title')}</h2>
+      <a class="contact__email" href={`mailto:${profile.email}`}>{profile.email}</a>
+    </header>
+
+    <div class="battle" data-reveal>
+      <p class="battle__prompt window px" role="status" data-copy-status data-default={t('contact.prompt')}>
+        {t('contact.prompt')}
+      </p>
+      <ul class="battle__menu window px" data-arrow-menu>
+        <li><a class="caret" href={`mailto:${profile.email}`}>{t('contact.email')}</a></li>
+        <li>
+          <a class="caret" href={profile.linkedin} target="_blank" rel="noopener noreferrer">{t('contact.linkedin')}</a>
+        </li>
+        <li>
+          <a class="caret" href={profile.github} target="_blank" rel="noopener noreferrer">{t('contact.github')}</a>
+        </li>
+        <li>
+          <button
+            class="caret"
+            type="button"
+            data-copy={profile.email}
+            data-copied={t('contact.copiedMsg')}>{t('contact.copy')}</button
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="stage-prop stage-prop--left ledge contact__ledge" data-landing aria-hidden="true"></div>
+
+  <footer class="contact__foot px">
+    <p>© {new Date().getFullYear()} {profile.name}</p>
+    <p>{profile.location}</p>
+  </footer>
+</section>
+
+<style>
+  .contact {
+    background: var(--ink);
+    color: var(--paper);
+    padding-bottom: 2rem;
+  }
+
+  /* Encounter-style wipe: columns of the dark section rise in steps as it scrolls in. Enabled from script. */
+  .wipe {
+    display: none;
+    position: absolute;
+    inset: auto 0 calc(100% - 1px);
+    height: 7rem;
+    pointer-events: none;
+  }
+
+  .wipe.is-on {
+    display: flex;
+  }
+
+  .wipe span {
+    flex: 1;
+    background: var(--ink);
+    transform-origin: bottom;
+    transform: scaleY(0);
+  }
+
+  .contact__ledge {
+    bottom: 1.5rem;
+  }
+
+  .contact :global(.section-label) {
+    color: var(--accent-inv);
+  }
+
+  .contact__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(2rem, 6vw, 5rem);
+  }
+
+  .contact .section-head {
+    margin-bottom: 0;
+  }
+
+  .contact__email {
+    justify-self: start;
+    margin-top: 0.75rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    overflow-wrap: anywhere;
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+
+  .battle {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .battle__prompt {
+    padding: 1rem 1.25rem;
+    font-size: 1.125rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    min-height: 3.8rem;
+  }
+
+  .battle__menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem 1rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 1.0625rem;
+  }
+
+  .battle__menu a,
+  .battle__menu button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 2.75rem;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: inherit;
+  }
+
+  .contact__foot {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    max-width: var(--max);
+    margin: clamp(4rem, 10vh, 7rem) auto 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--paper) 18%, transparent);
+    color: color-mix(in srgb, var(--paper) 65%, transparent);
+    font-size: 0.8125rem;
+  }
+
+  @media (max-width: 55rem) {
+    .contact__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 24rem) {
+    .battle__menu {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
