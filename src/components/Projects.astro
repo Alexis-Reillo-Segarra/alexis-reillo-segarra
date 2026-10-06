@@ -129,11 +129,16 @@ const emptySlots = projects.length === 0 ? 3 : 0;
     flex-direction: column;
     gap: 0.6rem;
     padding: 1.4rem 1.5rem 1.5rem;
-    /* `translate` rather than `transform`, which belongs to the scroll reveal */
+    /*
+     * `translate` rather than `transform`, which belongs to the scroll reveal. Eased, not stepped: a
+     * card this size moving in three jumps reads as dropped frames. The lift runs on the compositor,
+     * and the card has its own layer from the start so the first frame of it has nothing to draw.
+     */
+    will-change: translate;
     transition:
-      translate 0.18s steps(3),
-      border-radius 0.18s steps(3),
-      box-shadow 0.18s steps(3);
+      translate 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-radius 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   /* Picked, like an entry under the cursor in a menu: it lifts off the page and its corners round */

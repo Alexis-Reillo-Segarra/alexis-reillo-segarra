@@ -282,8 +282,8 @@ svg {
   background: var(--paper);
   box-shadow: 4px 4px 0 color-mix(in srgb, var(--ink) 14%, transparent);
   transition:
-    transform 0.12s steps(2),
-    box-shadow 0.12s steps(2);
+    transform 0.12s ease-out,
+    box-shadow 0.12s ease-out;
 }
 
 .btn.caret::before {
