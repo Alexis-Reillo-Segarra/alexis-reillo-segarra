@@ -4,6 +4,7 @@ import { Dialog, initDialogs } from './dialog';
 import { initEgg } from './egg';
 import { Guide, wave } from './guide';
 import { initStage } from './stage';
+import { loadPage, switchLanguage } from './lang';
 import { isSoundOn, setSound, sfx, unlock, type SfxName } from './sound';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -69,6 +70,17 @@ function initIntro(onDone: (played: boolean) => void) {
     dialog.focusNext();
   });
   intro.querySelector('[data-intro-skip]')?.addEventListener('click', close);
+  // Choosing a language here changes the words in place: a page load would restart the title screen
+  intro.querySelectorAll<HTMLAnchorElement>('[data-intro-lang]').forEach((link) => {
+    const warm = () => void loadPage(link.href).catch(() => {});
+    link.addEventListener('pointerenter', warm);
+    link.addEventListener('focus', warm);
+    link.addEventListener('click', (event) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      switchLanguage(link.href).catch(() => location.assign(link.href));
+    });
+  });
   document.addEventListener('keydown', onKey);
   startBtn.focus();
 }

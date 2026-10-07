@@ -41,10 +41,12 @@ const cursorVars = `:root{--cursor-default:${cssCursor(handMap, handPalette, 'au
           seen = sessionStorage.getItem('intro') === 'done';
         } catch (e) {}
         var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        /* Seen only skips it when moving between pages (the language switch); a reload plays it again, from the top */
+        /* Seen only skips it when moving between pages (the language switch); a reload plays it again, from the top.
+           The mark goes too, or a language chosen on that replayed intro would land past it */
         try {
           if (performance.getEntriesByType('navigation')[0].type === 'reload') {
             seen = false;
+            sessionStorage.removeItem('intro');
             if (!reduced) history.scrollRestoration = 'manual';
           }
         } catch (e) {}

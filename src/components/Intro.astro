@@ -24,7 +24,7 @@ const lines = [t('intro.line1'), t('intro.line2'), t('intro.line3')];
     <nav class="intro__langs px" aria-label={t('intro.language')}>
       {
         (Object.keys(languages) as Lang[]).map((code) => (
-          <a class="caret" href={paths[code]} hreflang={code} aria-current={code === lang ? 'true' : undefined}>
+          <a class="caret" href={paths[code]} hreflang={code} data-intro-lang aria-current={code === lang ? 'true' : undefined}>
             {languages[code]}
           </a>
         ))
@@ -102,13 +102,17 @@ const lines = [t('intro.line1'), t('intro.line2'), t('intro.line3')];
   .intro__start {
     margin-top: 1.75rem;
     padding: 0.75rem 1.25rem;
+    border: 3px solid var(--accent);
     font-size: 1.25rem;
     color: var(--accent-ink);
     animation: blink 1.1s steps(1) infinite;
   }
 
+  /* The frame is the button itself, so it cannot double as the focus ring: chosen, it holds still and fills in */
   .intro__start:hover,
   .intro__start:focus-visible {
+    outline: none;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
     animation: none;
   }
 

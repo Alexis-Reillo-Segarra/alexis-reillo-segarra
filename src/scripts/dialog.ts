@@ -8,7 +8,7 @@ type State = 'idle' | 'typing' | 'waiting' | 'done';
 
 /** DS-style text box: types each line, waits for a press, then moves on. */
 export class Dialog {
-  private lines: string[];
+  private lines: string[] = [];
   private textEl: HTMLElement;
   private index = 0;
   private timer = 0;
@@ -19,7 +19,6 @@ export class Dialog {
     private el: HTMLElement,
     private onClose?: () => void,
   ) {
-    this.lines = JSON.parse(el.dataset.lines ?? '[]');
     this.textEl = el.querySelector<HTMLElement>('[data-dialog-text]')!;
     this.closable = 'closable' in el.dataset;
     el.addEventListener('click', () => this.advance());
@@ -27,6 +26,8 @@ export class Dialog {
 
   start() {
     if (this.state !== 'idle') return;
+    // Read only now: the lines can still change language while the dialog waits
+    this.lines = JSON.parse(this.el.dataset.lines ?? '[]');
     this.typeLine();
   }
 
