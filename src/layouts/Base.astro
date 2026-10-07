@@ -3,6 +3,7 @@ import '@fontsource-variable/newsreader';
 import '@fontsource-variable/inter';
 import '@fontsource-variable/pixelify-sans';
 import '../styles/global.css';
+import Analytics from '@vercel/analytics/astro';
 import { cssCursor } from '../lib/pixel';
 import { handActivePalette, handHotspot, handMap, handPalette } from '../data/sprites';
 import { paths, useTranslations, type Lang } from '../i18n/ui';
@@ -15,6 +16,9 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const title = `${profile.name} — ${profile.role}`;
+// Link previews only take absolute addresses
+const url = new URL(paths[lang], Astro.site);
+const image = new URL('/og.png', Astro.site);
 const cursorVars = `:root{--cursor-default:${cssCursor(handMap, handPalette, 'auto', handHotspot)};--cursor-active:${cssCursor(handMap, handActivePalette, 'pointer', handHotspot)}}`;
 ---
 
@@ -29,10 +33,25 @@ const cursorVars = `:root{--cursor-default:${cssCursor(handMap, handPalette, 'au
     <meta property="og:title" content={title} />
     <meta property="og:description" content={t('meta.description')} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={url} />
+    <meta property="og:site_name" content={profile.name} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_GB'} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={t('meta.description')} />
+    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image:alt" content={title} />
+    <link rel="canonical" href={url} />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="alternate" hreflang="es" href={paths.es} />
     <link rel="alternate" hreflang="en" href={paths.en} />
     <style set:html={cursorVars}></style>
+    <Analytics />
     <script is:inline>
       (function () {
         var root = document.documentElement;
