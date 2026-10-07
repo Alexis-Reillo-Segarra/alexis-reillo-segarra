@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import Character from './Character.astro';
 import TechBadge from './TechBadge.astro';
+import Icon from './Icon.astro';
 import { languages, paths, useTranslations, type Lang } from '../i18n/ui';
 import { aboutLines, bag, certifications, journey, profile, projects, skillGroups } from '../data/content';
 
@@ -198,11 +199,13 @@ const number = (i: number) => `No. ${String(i + 1).padStart(3, '0')}`;
                     <p class="px m-entry__links">
                       {project.url && (
                         <a href={project.url} target="_blank" rel="noopener noreferrer">
+                          <Icon name="external" />
                           {t('projects.demo')}
                         </a>
                       )}
                       {project.repo && (
                         <a href={project.repo} target="_blank" rel="noopener noreferrer">
+                          <Icon name="github" />
                           {t('projects.repo')}
                         </a>
                       )}
@@ -224,12 +227,16 @@ const number = (i: number) => `No. ${String(i + 1).padStart(3, '0')}`;
           <a class="m-contact__email" href={`mailto:${profile.email}`}>{profile.email}</a>
         </header>
         <ul class="m-contact__menu px">
-          <li><a class="btn" href={`mailto:${profile.email}`}>{t('contact.email')}</a></li>
+          <li><a class="btn" href={`mailto:${profile.email}`}><Icon name="mail" />{t('contact.email')}</a></li>
           <li>
-            <a class="btn" href={profile.linkedin} target="_blank" rel="noopener noreferrer">{t('contact.linkedin')}</a>
+            <a class="btn" href={profile.linkedin} target="_blank" rel="noopener noreferrer"
+              ><Icon name="linkedin" />{t('contact.linkedin')}</a
+            >
           </li>
           <li>
-            <a class="btn" href={profile.github} target="_blank" rel="noopener noreferrer">{t('contact.github')}</a>
+            <a class="btn" href={profile.github} target="_blank" rel="noopener noreferrer"
+              ><Icon name="github" />{t('contact.github')}</a
+            >
           </li>
         </ul>
 

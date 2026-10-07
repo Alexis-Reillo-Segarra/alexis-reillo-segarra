@@ -24,10 +24,6 @@ const [roleA, roleB] = profile.role.split(' | ');
         d="M48 -62C61 -52 69 -36 73 -19C77 -2 77 16 69 30C61 44 45 54 28 62C11 70 -7 76 -24 72C-41 68 -57 54 -66 37C-75 20 -77 0 -72 -18C-67 -36 -55 -52 -40 -62C-25 -72 -7 -76 9 -75C25 -74 35 -72 48 -62Z"
         transform="translate(100 100)"></path>
     </svg>
-    <svg class="shape shape--c spin" viewBox="0 0 120 120" data-parallax="-52">
-      <path d="M10 60C10 30 30 10 60 10S110 30 110 60S90 110 60 110" fill="none" stroke-width="3" stroke-linecap="round"
-      ></path>
-    </svg>
   </div>
 
   <div class="stage-prop floor hero__floor" data-floor="hero" aria-hidden="true"></div>
@@ -123,15 +119,6 @@ const [roleA, roleB] = profile.role.split(' | ');
     --dy: -24%;
     --dr: -48deg;
     --drift-time: 34s;
-  }
-
-  .shape--c {
-    width: 7rem;
-    left: 46%;
-    top: 16%;
-    stroke: var(--ink);
-    opacity: 0.25;
-    --spin-time: 36s;
   }
 
   .hero__grid {
@@ -311,10 +298,6 @@ const [roleA, roleB] = profile.role.split(' | ');
       top: auto;
       bottom: -9px;
       transform: rotate(45deg);
-    }
-
-    .shape--c {
-      display: none;
     }
   }
 </style>

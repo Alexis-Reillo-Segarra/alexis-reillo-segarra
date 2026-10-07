@@ -42,8 +42,8 @@ const GET_UP = [
 const HEAD_START = 170;
 /** Scroll spent standing still in the journey: on landing, at each stop, and at the last node. */
 const LANDING_HOLD = 260;
-const STOP_HOLD = 560;
-const NEXT_HOLD = 380;
+const STOP_HOLD = 350;
+const NEXT_HOLD = 240;
 /** Route covered per pixel of scroll on the way to the first stop, which is a whole screen away. */
 const FIRST_LEG_PACE = 1.6;
 /** Scroll he takes to strap the parachute on, the least the flight may get, and the share of it that is the jump. */
@@ -283,6 +283,13 @@ export function initStage(guide: Guide, actor: HTMLElement) {
     window.scrollTo({ top: 0 });
   };
   topLinks.forEach((link) => link.addEventListener('click', toTop));
+  // Nor is the journey's, once it has been pinned: from further down the page it is the end of the route.
+  const journeyLinks = document.querySelectorAll<HTMLElement>('a[href="#journey"]');
+  const toJourney = (event: Event) => {
+    event.preventDefault();
+    window.scrollTo({ top: pin.start });
+  };
+  journeyLinks.forEach((link) => link.addEventListener('click', toJourney));
 
   /** Whether the card has finished coming in with the rest of the hero: he does not greet from a card nobody can see yet. */
   let arrived = false;
@@ -529,6 +536,7 @@ export function initStage(guide: Guide, actor: HTMLElement) {
     gsap.ticker.remove(update);
     ScrollTrigger.removeEventListener('refresh', measure);
     topLinks.forEach((link) => link.removeEventListener('click', toTop));
+    journeyLinks.forEach((link) => link.removeEventListener('click', toJourney));
     heroPin.kill();
     pin.kill();
     guide.onWave = undefined;

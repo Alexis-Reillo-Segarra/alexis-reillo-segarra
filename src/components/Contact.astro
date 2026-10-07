@@ -2,6 +2,7 @@
 import Blobs from './Blobs.astro';
 import { useTranslations, type Lang } from '../i18n/ui';
 import { profile } from '../data/content';
+import Icon from './Icon.astro';
 
 interface Props {
   lang: Lang;
@@ -28,19 +29,23 @@ const t = useTranslations(lang);
         {t('contact.prompt')}
       </p>
       <ul class="battle__menu window px" data-arrow-menu>
-        <li><a class="caret" href={`mailto:${profile.email}`}>{t('contact.email')}</a></li>
+        <li><a class="caret" href={`mailto:${profile.email}`}><Icon name="mail" />{t('contact.email')}</a></li>
         <li>
-          <a class="caret" href={profile.linkedin} target="_blank" rel="noopener noreferrer">{t('contact.linkedin')}</a>
+          <a class="caret" href={profile.linkedin} target="_blank" rel="noopener noreferrer"
+            ><Icon name="linkedin" />{t('contact.linkedin')}</a
+          >
         </li>
         <li>
-          <a class="caret" href={profile.github} target="_blank" rel="noopener noreferrer">{t('contact.github')}</a>
+          <a class="caret" href={profile.github} target="_blank" rel="noopener noreferrer"
+            ><Icon name="github" />{t('contact.github')}</a
+          >
         </li>
         <li>
           <button
             class="caret"
             type="button"
             data-copy={profile.email}
-            data-copied={t('contact.copiedMsg')}>{t('contact.copy')}</button
+            data-copied={t('contact.copiedMsg')}><Icon name="copy" />{t('contact.copy')}</button
           >
         </li>
       </ul>
@@ -143,6 +148,16 @@ const t = useTranslations(lang);
     text-align: left;
     text-transform: uppercase;
     letter-spacing: inherit;
+    border-radius: 6px;
+    transition: background-color 0.12s ease-out;
+  }
+
+  /* The option under the cursor is lit, as well as pointed at */
+  .battle__menu a:hover,
+  .battle__menu a:focus-visible,
+  .battle__menu button:hover,
+  .battle__menu button:focus-visible {
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
   }
 
   .contact__foot {

@@ -36,8 +36,15 @@
   --gutter: clamp(1.25rem, 5vw, 4rem);
   --max: 72rem;
   --hud-h: 4rem;
-  /* Centre of the side margin, measured from either edge: the lanes Alexis goes down the page in */
-  --lane: calc(max(var(--gutter), (100vw - var(--max)) / 2) / 2);
+  /* The margin either side of the content column */
+  --side: max(var(--gutter), (100vw - var(--max)) / 2);
+  /*
+   * The lanes Alexis goes down the page in, measured from either edge: the centre of the side
+   * margin, and on a wide monitor no further out than this from the content, so the stage stays
+   * with the page instead of spreading to the edges of the screen.
+   */
+  --lane-reach: 6rem;
+  --lane: calc(var(--side) - min(var(--side) / 2, var(--lane-reach)));
   --prop-w: 3.25rem;
   /* The stage's unit, two pixels of his sprite; the props are drawn on the same grid */
   --px: 2px;
@@ -370,15 +377,11 @@ svg {
 }
 
 /*
- * The background stains drift and the rings turn, slowly enough to stay in the background. Both use the
- * standalone translate/rotate/scale properties, so they add to a `transform` set elsewhere (the hero's parallax).
+ * The background stains drift, slowly enough to stay in the background. They use the standalone
+ * translate/rotate/scale properties, so they add to a `transform` set elsewhere (the hero's parallax).
  */
 .drift {
   animation: drift var(--drift-time, 30s) ease-in-out infinite;
-}
-
-.spin {
-  animation: spin var(--spin-time, 36s) linear infinite;
 }
 
 /* A loop through two waypoints rather than a straight there-and-back, swelling and shrinking on the way */
@@ -393,12 +396,6 @@ svg {
     translate: calc(var(--dx, 24%) * 0.2) var(--dy, 24%);
     rotate: var(--dr, 40deg);
     scale: 0.92;
-  }
-}
-
-@keyframes spin {
-  to {
-    rotate: 1turn;
   }
 }
 

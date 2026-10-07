@@ -12,53 +12,55 @@ const t = useTranslations(lang);
 ---
 
 <section class="journey" id="journey" data-journey>
-  <div class="journey__track" data-journey-track>
-    <div class="stage-prop stage-prop--left ladder journey__way-in" data-journey-in aria-hidden="true"></div>
-    <div class="panel panel--intro">
-      <p class="px section-label">{t('journey.label')}</p>
-      <h2 class="section-title">{t('journey.title')}</h2>
-      <p class="px journey__hint" aria-hidden="true">{t('journey.hint')} <span class="journey__hint-arrow"></span></p>
-    </div>
+  <div class="journey__view">
+    <div class="journey__track" data-journey-track>
+      <div class="stage-prop stage-prop--left ladder journey__way-in" data-journey-in aria-hidden="true"></div>
+      <div class="panel panel--intro">
+        <p class="px section-label">{t('journey.label')}</p>
+        <h2 class="section-title">{t('journey.title')}</h2>
+        <p class="px journey__hint" aria-hidden="true">{t('journey.hint')} <span class="journey__hint-arrow"></span></p>
+      </div>
 
-    <ol class="journey__stops">
-      {
-        journey.map((stop, i) => (
-          <li class="panel stop" data-stop={`stop-${i}`}>
-            <span class="stop__node" data-node aria-hidden="true" />
-            <article class="stop__card window">
-              <header class="px stop__head">
-                <span class:list={['stop__kind', `stop__kind--${stop.kind}`]}>{t(`journey.${stop.kind}`)}</span>
-                <span>No. {String(i + 1).padStart(3, '0')}</span>
-              </header>
-              <h3 class="stop__org">{stop.org}</h3>
-              <p class="stop__role">{stop.role[lang]}</p>
-              <p class="px stop__meta">
-                {stop.period[lang]}
-                <br />
-                {stop.place}
-              </p>
-              {
-                stop.stack && (
-                  <ul class="px stop__stack">
-                    {stop.stack.map((name) => (
-                      <TechBadge name={name} />
-                    ))}
-                  </ul>
-                )
-              }
-            </article>
-          </li>
-        ))
-      }
-    </ol>
+      <ol class="journey__stops">
+        {
+          journey.map((stop, i) => (
+            <li class="panel stop" data-stop={`stop-${i}`}>
+              <span class="stop__node" data-node aria-hidden="true" />
+              <article class="stop__card window">
+                <header class="px stop__head">
+                  <span class:list={['stop__kind', `stop__kind--${stop.kind}`]}>{t(`journey.${stop.kind}`)}</span>
+                  <span>No. {String(i + 1).padStart(3, '0')}</span>
+                </header>
+                <h3 class="stop__org">{stop.org}</h3>
+                <p class="stop__role">{stop.role[lang]}</p>
+                <p class="px stop__meta">
+                  {stop.period[lang]}
+                  <br />
+                  {stop.place}
+                </p>
+                {
+                  stop.stack && (
+                    <ul class="px stop__stack">
+                      {stop.stack.map((name) => (
+                        <TechBadge name={name} />
+                      ))}
+                    </ul>
+                  )
+                }
+              </article>
+            </li>
+          ))
+        }
+      </ol>
 
-    <div class="panel panel--next" data-stop="next">
-      <span class="stop__node stop__node--next" data-node aria-hidden="true"></span>
-      <p class="px section-label">{t('journey.nextTitle')}</p>
-      <p class="section-title">{t('journey.nextText')}</p>
-      <a class="btn btn--primary caret px" href="#contact">{t('journey.nextCta')}</a>
+      <div class="panel panel--next" data-stop="next">
+        <span class="stop__node stop__node--next" data-node aria-hidden="true"></span>
+        <p class="px section-label">{t('journey.nextTitle')}</p>
+        <p class="section-title">{t('journey.nextText')}</p>
+        <a class="btn btn--primary caret px" href="#contact">{t('journey.nextCta')}</a>
+      </div>
+      <div class="stage-prop ladder journey__way-out" aria-hidden="true"></div>
     </div>
-    <div class="stage-prop ladder journey__way-out" aria-hidden="true"></div>
   </div>
 
   <div class="journey__exp px" aria-hidden="true">
@@ -87,6 +89,23 @@ const t = useTranslations(lang);
     top: calc(var(--route-y) + 4px);
     bottom: 0;
     right: calc(var(--gutter) + 0.75rem - var(--prop-w) / 2);
+  }
+
+  /*
+   * The window the route is seen through. It spans the screen, so nothing the stage measures moves,
+   * but on a monitor wider than the page it only shows as far as the lanes: the stops come into the
+   * content column and fade out of it, rather than trailing off to the edge of the screen.
+   */
+  .journey.is-horizontal .journey__view {
+    --edge: max(0px, var(--side) - 2 * var(--lane-reach));
+    --fade: min(var(--edge), 5rem);
+    mask-image: linear-gradient(
+      90deg,
+      transparent calc(var(--edge) - var(--fade)),
+      #000 var(--edge),
+      #000 calc(100% - var(--edge)),
+      transparent calc(100% - var(--edge) + var(--fade))
+    );
   }
 
   .journey__track {
@@ -128,6 +147,7 @@ const t = useTranslations(lang);
   /* A full screen wide: Alexis comes down at its left edge and crosses it on his way to the first stop */
   .panel--intro {
     width: 100vw;
+    padding-inline: var(--side);
   }
 
   .journey__hint {
@@ -258,8 +278,8 @@ const t = useTranslations(lang);
 
   .journey__exp {
     position: absolute;
-    left: var(--gutter);
-    right: calc(var(--lane) * 2 + 1rem);
+    left: var(--side);
+    right: calc(var(--side) + 1rem);
     bottom: 1.75rem;
     display: flex;
     align-items: center;
@@ -294,7 +314,8 @@ const t = useTranslations(lang);
     flex-direction: column;
     gap: 2.5rem;
     width: 100%;
-    max-width: 40rem;
+    max-width: var(--max);
+    margin-inline: auto;
     height: auto;
     min-height: 0;
     padding-top: 0;
@@ -314,7 +335,7 @@ const t = useTranslations(lang);
 
   .journey:not(.is-horizontal) .panel {
     width: 100%;
-    max-width: none;
+    max-width: 40rem;
     min-width: 0;
     padding: 0;
   }

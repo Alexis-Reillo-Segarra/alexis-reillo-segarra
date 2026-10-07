@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import { useTranslations, type Lang } from '../i18n/ui';
 import { projects } from '../data/content';
 import TechBadge from './TechBadge.astro';
+import Icon from './Icon.astro';
 
 interface Props {
   lang: Lang;
@@ -53,11 +54,13 @@ const emptySlots = projects.length === 0 ? 3 : 0;
             <p class="px entry__links">
               {project.url && (
                 <a class="caret" href={project.url} target="_blank" rel="noopener noreferrer">
+                  <Icon name="external" />
                   {t('projects.demo')}
                 </a>
               )}
               {project.repo && (
                 <a class="caret" href={project.repo} target="_blank" rel="noopener noreferrer">
+                  <Icon name="github" />
                   {t('projects.repo')}
                 </a>
               )}
@@ -88,6 +91,8 @@ const emptySlots = projects.length === 0 ? 3 : 0;
     /* The floor Alexis crosses on, in the gap between the stack and this section's title */
     --floor-y: calc(clamp(5rem, 12vh, 9rem) - 1rem);
     padding-bottom: calc(clamp(5rem, 12vh, 9rem) + 6rem);
+    /* Its floor is the first thing in it: a jump to this section leaves air between that and the HUD */
+    scroll-margin-top: 3rem;
   }
 
   /* The ladder from the journey ends on that floor */
@@ -207,8 +212,15 @@ const emptySlots = projects.length === 0 ? 3 : 0;
     margin-top: auto;
   }
 
+  /* Lettered as links, so they read as something to press before the cursor is over them */
   .entry__links a {
+    display: inline-flex;
+    align-items: center;
     padding-block: 0.5rem;
+    color: var(--accent-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
   }
 
   .entry--unknown {
