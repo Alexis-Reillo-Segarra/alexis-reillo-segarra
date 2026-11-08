@@ -9,12 +9,11 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const path = (url: string) => new URL(url).pathname.replace(/^\/|\/$/g, '');
 const channels = [
-  { label: 'email', icon: icons.mail, href: `mailto:${profile.email}`, handle: profile.email },
-  { label: 'linkedin', icon: icons.linkedin, href: profile.linkedin, handle: path(profile.linkedin) },
-  { label: 'github', icon: icons.github, href: profile.github, handle: path(profile.github) },
-  { label: 'x', icon: icons.x, href: profile.x, handle: `@${path(profile.x)}` },
+  { label: 'Email', icon: icons.mail, href: `mailto:${profile.email}` },
+  { label: 'LinkedIn', icon: icons.linkedin, href: profile.linkedin },
+  { label: 'GitHub', icon: icons.github, href: profile.github },
+  { label: 'X', icon: icons.x, href: profile.x },
 ];
 ---
 
@@ -23,32 +22,20 @@ const channels = [
   <p class="lead">{t('contact.lead')}</p>
   <ul class="channels">
     {
-      channels.map(({ label, icon, href, handle }) => {
-        const email = href.startsWith('mailto:');
+      channels.map(({ label, icon, href }) => {
+        const external = !href.startsWith('mailto:');
         return (
-          <li class="channel">
-            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
-              <path d={icon} />
-            </svg>
-            <div class="text">
-              <span class="label">{label}</span>
-              <span class="line">
-                <a
-                  class="handle"
-                  href={href}
-                  target={email ? undefined : '_blank'}
-                  rel={email ? undefined : 'noopener noreferrer'}>
-                  {handle}
-                  {!email && <span aria-hidden="true">↗</span>}
-                </a>
-                {email && (
-                  <button class="copy" type="button" data-copy={profile.email} data-done={t('contact.copied')}>
-                    {t('contact.copy')}
-                  </button>
-                  <span class="sr-only" role="status" data-copy-status data-message={t('contact.copiedMsg')} />
-                )}
-              </span>
-            </div>
+          <li>
+            <a
+              href={href}
+              aria-label={label}
+              title={label}
+              target={external ? '_blank' : undefined}
+              rel={external ? 'noopener noreferrer' : undefined}>
+              <svg viewBox="0 0 24 24" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+                <path d={icon} />
+              </svg>
+            </a>
           </li>
         );
       })
@@ -56,118 +43,39 @@ const channels = [
   </ul>
 </section>
 
-<script>
-  const button = document.querySelector<HTMLButtonElement>('[data-copy]');
-  const status = document.querySelector<HTMLElement>('[data-copy-status]');
-  if (button && status) {
-    const label = button.textContent;
-    let timer: number | undefined;
-    button.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(button.dataset.copy ?? '');
-      } catch {
-        return;
-      }
-      button.textContent = button.dataset.done ?? '';
-      status.textContent = status.dataset.message ?? '';
-      clearTimeout(timer);
-      timer = window.setTimeout(() => {
-        button.textContent = label;
-        status.textContent = '';
-      }, 2000);
-    });
-  }
-</script>
-
 <style>
   .lead {
-    margin-bottom: 2.75rem;
+    margin-bottom: 1.5rem;
     font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 600;
     line-height: 1.2;
   }
 
+  /* Pulled left by the links' padding, so the first icon lines up with the text above */
   .channels {
-    display: grid;
-    gap: 1.75rem;
-  }
-
-  /* The handle's link stretches over the whole row, icon included; the copy button sits above it */
-  .channel {
-    position: relative;
     display: flex;
-    align-items: center;
-    gap: 1.25rem;
+    gap: 0.75rem;
+    margin-left: -10px;
   }
 
-  /* 48px is two screen pixels to each of the icon's 24: whole numbers keep its pixels square */
-  .icon {
-    flex: none;
-    width: 48px;
-    height: 48px;
+  /* The padding makes each a 44px target around a 24px icon */
+  a {
+    display: block;
+    padding: 10px;
     color: var(--muted);
     transition: color 0.15s ease-out, filter 0.15s ease-out;
   }
 
-  .channel:hover .icon,
-  .channel:focus-within .icon {
+  a:hover,
+  a:focus-visible {
     color: var(--fg);
-    filter: drop-shadow(0 0 6px rgb(230 237 243 / 0.35));
+    filter: drop-shadow(0 0 4px rgb(230 237 243 / 0.4));
   }
 
-  .text {
-    display: grid;
-    justify-items: start;
-    min-width: 0;
-  }
-
-  /* The copy button follows the address, and drops under it when the line runs out */
-  .line {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0 1.25rem;
-  }
-
-  .label {
-    color: var(--muted);
-    font-size: 0.9375rem;
-    line-height: 1.4;
-  }
-
-  .handle {
-    display: flex;
-    gap: 1ch;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-  }
-
-  .handle::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-  }
-
-  .channel:hover .handle {
-    text-decoration-color: currentColor;
-  }
-
-  .copy {
-    position: relative;
-    z-index: 1;
-    color: var(--muted);
-    transition: color 0.15s ease-out;
-  }
-
-  .copy::before {
-    content: '[';
-  }
-
-  .copy::after {
-    content: ']';
-  }
-
-  .copy:hover {
-    color: var(--fg);
+  /* 24px is the icons' own grid: one screen pixel to each of theirs */
+  svg {
+    display: block;
+    width: 24px;
+    height: 24px;
   }
 </style>

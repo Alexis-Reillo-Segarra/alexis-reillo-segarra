@@ -20,9 +20,6 @@ export const ui = {
     'projects.demo': 'demo',
     'projects.writeup': 'artículo',
     'contact.lead': '¿Hablamos?',
-    'contact.copy': 'copiar',
-    'contact.copied': 'copiado',
-    'contact.copiedMsg': 'El email se ha copiado al portapapeles.',
   },
   en: {
     'meta.description':
@@ -40,9 +37,6 @@ export const ui = {
     'projects.demo': 'demo',
     'projects.writeup': 'write-up',
     'contact.lead': 'Shall we talk?',
-    'contact.copy': 'copy',
-    'contact.copied': 'copied',
-    'contact.copiedMsg': 'The email has been copied to the clipboard.',
   },
 } as const;
 
