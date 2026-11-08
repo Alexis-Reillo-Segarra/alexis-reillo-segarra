@@ -1,8 +1,6 @@
 ---
-import Blobs from './Blobs.astro';
 import { useTranslations, type Lang } from '../i18n/ui';
 import { profile } from '../data/content';
-import Icon from './Icon.astro';
 
 interface Props {
   lang: Lang;
@@ -10,178 +8,109 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
+const handle = (url: string) => new URL(url).pathname.replace(/^\/|\/$/g, '');
 ---
 
-<section class="contact section" id="contact">
-  <Blobs variant="contact" />
-  <div class="wipe" data-wipe aria-hidden="true">
-    {Array.from({ length: 24 }, () => <span />)}
-  </div>
-  <div class="wrap contact__grid">
-    <header class="section-head" data-reveal>
-      <p class="px section-label">{t('contact.label')}</p>
-      <h2 class="section-title">{t('contact.title')}</h2>
-      <a class="contact__email" href={`mailto:${profile.email}`}>{profile.email}</a>
-    </header>
-
-    <div class="battle" data-reveal>
-      <p class="battle__prompt window px" role="status" data-copy-status data-default={t('contact.prompt')}>
-        {t('contact.prompt')}
-      </p>
-      <ul class="battle__menu window px" data-arrow-menu>
-        <li><a class="caret" href={`mailto:${profile.email}`}><Icon name="mail" />{t('contact.email')}</a></li>
-        <li>
-          <a class="caret" href={profile.linkedin} target="_blank" rel="noopener noreferrer"
-            ><Icon name="linkedin" />{t('contact.linkedin')}</a
-          >
-        </li>
-        <li>
-          <a class="caret" href={profile.github} target="_blank" rel="noopener noreferrer"
-            ><Icon name="github" />{t('contact.github')}</a
-          >
-        </li>
-        <li>
-          <button
-            class="caret"
-            type="button"
-            data-copy={profile.email}
-            data-copied={t('contact.copiedMsg')}><Icon name="copy" />{t('contact.copy')}</button
-          >
-        </li>
-      </ul>
+<section class="section" id="contact" aria-labelledby="contact-title">
+  <h2 class="section__title" id="contact-title"><span class="n">03</span>{t('nav.contact')}</h2>
+  <p class="lead">{t('contact.lead')}</p>
+  <dl class="channels">
+    <div>
+      <dt>email</dt>
+      <dd>
+        <a href={`mailto:${profile.email}`}>{profile.email}</a>
+        <button class="copy" type="button" data-copy={profile.email} data-done={t('contact.copied')}>
+          {t('contact.copy')}
+        </button>
+        <span class="sr-only" role="status" data-copy-status data-message={t('contact.copiedMsg')}></span>
+      </dd>
     </div>
-  </div>
-
-  <div class="stage-prop stage-prop--left ledge contact__ledge" data-landing aria-hidden="true"></div>
-
-  <footer class="contact__foot px">
-    <p>© {new Date().getFullYear()} {profile.name}</p>
-    <p>{profile.location}</p>
-  </footer>
+    <div>
+      <dt>linkedin</dt>
+      <dd><a href={profile.linkedin} target="_blank" rel="noopener noreferrer">{handle(profile.linkedin)} ↗</a></dd>
+    </div>
+    <div>
+      <dt>github</dt>
+      <dd><a href={profile.github} target="_blank" rel="noopener noreferrer">{handle(profile.github)} ↗</a></dd>
+    </div>
+  </dl>
 </section>
 
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-copy]');
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+  if (button && status) {
+    const label = button.textContent;
+    let timer: number | undefined;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy ?? '');
+      } catch {
+        return;
+      }
+      button.textContent = button.dataset.done ?? '';
+      status.textContent = status.dataset.message ?? '';
+      clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        button.textContent = label;
+        status.textContent = '';
+      }, 2000);
+    });
+  }
+</script>
+
 <style>
-  .contact {
-    background: var(--ink);
-    color: var(--paper);
-    padding-bottom: 2rem;
+  .lead {
+    margin-bottom: 2.5rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 600;
+    line-height: 1.2;
   }
 
-  /* Encounter-style wipe: columns of the dark section rise in steps as it scrolls in. Enabled from script. */
-  .wipe {
-    display: none;
-    position: absolute;
-    inset: auto 0 calc(100% - 1px);
-    height: 7rem;
-    pointer-events: none;
+  .channels {
+    border-top: 1px solid var(--line);
   }
 
-  .wipe.is-on {
-    display: flex;
-  }
-
-  .wipe span {
-    flex: 1;
-    background: var(--ink);
-    transform-origin: bottom;
-    transform: scaleY(0);
-  }
-
-  .contact__ledge {
-    bottom: 1.5rem;
-  }
-
-  .contact :global(.section-label) {
-    color: var(--accent-inv);
-  }
-
-  .contact__grid {
+  .channels div {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: end;
-    gap: clamp(2rem, 6vw, 5rem);
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 0.25rem 1.5rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--line);
   }
 
-  .contact .section-head {
-    margin-bottom: 0;
+  dt {
+    color: var(--muted);
   }
 
-  .contact__email {
-    justify-self: start;
-    margin-top: 0.75rem;
-    font-family: var(--font-serif);
-    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
-    overflow-wrap: anywhere;
-    text-decoration: underline;
-    text-decoration-color: var(--accent);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.3em;
-  }
-
-  .battle {
-    display: grid;
-    gap: 0.75rem;
-  }
-
-  .battle__prompt {
-    padding: 1rem 1.25rem;
-    font-size: 1.125rem;
-    letter-spacing: 0.04em;
-    text-transform: none;
-    min-height: 3.8rem;
-  }
-
-  .battle__menu {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.25rem 1rem;
-    padding: 0.75rem 1.25rem;
-    font-size: 1.0625rem;
-  }
-
-  .battle__menu a,
-  .battle__menu button {
+  dd {
     display: flex;
-    align-items: center;
-    width: 100%;
-    min-height: 2.75rem;
-    text-align: left;
-    text-transform: uppercase;
-    letter-spacing: inherit;
-    border-radius: 6px;
-    transition: background-color 0.12s ease-out;
-  }
-
-  /* The option under the cursor is lit, as well as pointed at */
-  .battle__menu a:hover,
-  .battle__menu a:focus-visible,
-  .battle__menu button:hover,
-  .battle__menu button:focus-visible {
-    background: color-mix(in srgb, var(--accent) 16%, transparent);
-  }
-
-  .contact__foot {
-    display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
-    gap: 0.5rem 2rem;
-    max-width: var(--max);
-    margin: clamp(4rem, 10vh, 7rem) auto 0;
-    padding-top: 1.5rem;
-    border-top: 1px solid color-mix(in srgb, var(--paper) 18%, transparent);
-    color: color-mix(in srgb, var(--paper) 65%, transparent);
-    font-size: 0.8125rem;
+    align-items: baseline;
+    gap: 0.25rem 1.25rem;
+    overflow-wrap: anywhere;
   }
 
-  @media (max-width: 55rem) {
-    .contact__grid {
-      grid-template-columns: 1fr;
-    }
+  .copy {
+    color: var(--muted);
+    transition: color 0.15s ease-out;
   }
 
-  @media (max-width: 24rem) {
-    .battle__menu {
-      grid-template-columns: 1fr;
+  .copy::before {
+    content: '[';
+  }
+
+  .copy::after {
+    content: ']';
+  }
+
+  .copy:hover {
+    color: var(--fg);
+  }
+
+  @media (max-width: 30rem) {
+    .channels div {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

@@ -1,65 +1,17 @@
-/* The colours are registered so the browser can blend from one value to another */
-@property --bg { syntax: '<color>'; inherits: true; initial-value: #f5f3ec; }
-@property --bg-2 { syntax: '<color>'; inherits: true; initial-value: #ebe8dd; }
-@property --paper { syntax: '<color>'; inherits: true; initial-value: #fffdf8; }
-@property --ink { syntax: '<color>'; inherits: true; initial-value: #191918; }
-@property --ink-2 { syntax: '<color>'; inherits: true; initial-value: #5e5d58; }
-@property --rule { syntax: '<color>'; inherits: true; initial-value: rgba(25, 25, 24, 0.14); }
-@property --accent { syntax: '<color>'; inherits: true; initial-value: #cc6b49; }
-@property --accent-ink { syntax: '<color>'; inherits: true; initial-value: #a94f31; }
-@property --accent-inv { syntax: '<color>'; inherits: true; initial-value: #e89a7c; }
-@property --olive { syntax: '<color>'; inherits: true; initial-value: #7a8055; }
-@property --sky { syntax: '<color>'; inherits: true; initial-value: #6a8caf; }
-@property --ochre { syntax: '<color>'; inherits: true; initial-value: #c9963f; }
-@property --plum { syntax: '<color>'; inherits: true; initial-value: #8e6a8a; }
-
+/*
+ * One typeface, two colours and the drawing behind. The canvas is GitHub's dark one, the same the
+ * Sisyphus art is drawn on (`scripts/sisyphus.py`), so page and drawing are one surface.
+ */
 :root {
-  --bg: #f5f3ec;
-  --bg-2: #ebe8dd;
-  --paper: #fffdf8;
-  --ink: #191918;
-  --ink-2: #5e5d58;
-  --rule: color-mix(in srgb, var(--ink) 14%, transparent);
-  --accent: #cc6b49;
-  --accent-ink: #a94f31;
-  /* The accent as lettering on an ink surface */
-  --accent-inv: #e89a7c;
-  --olive: #7a8055;
-  --sky: #6a8caf;
-  --ochre: #c9963f;
-  --plum: #8e6a8a;
-
-  --font-serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
-  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-pixel: 'Pixelify Sans Variable', 'Courier New', monospace;
-
-  --gutter: clamp(1.25rem, 5vw, 4rem);
-  --max: 72rem;
-  --hud-h: 4rem;
-  /* The margin either side of the content column */
-  --side: max(var(--gutter), (100vw - var(--max)) / 2);
-  /*
-   * The lanes Alexis goes down the page in, measured from either edge: the centre of the side
-   * margin, and on a wide monitor no further out than this from the content, so the stage stays
-   * with the page instead of spreading to the edges of the screen.
-   */
-  --lane-reach: 6rem;
-  --lane: calc(var(--side) - min(var(--side) / 2, var(--lane-reach)));
-  --prop-w: 3.25rem;
-  /* The stage's unit, two pixels of his sprite; the props are drawn on the same grid */
-  --px: 2px;
-
-  transition-property:
-    --bg, --bg-2, --paper, --ink, --ink-2, --rule, --accent, --accent-ink, --accent-inv, --olive, --sky, --ochre, --plum;
-  transition-duration: 2.8s;
-  transition-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
-}
-
-/* On the stage the side margins are Alexis's lanes, so they never get narrower than he is */
-@media (min-width: 64rem) {
-  :root {
-    --gutter: 5.5rem;
-  }
+  --bg: #0d1117;
+  --fg: #e6edf3;
+  --muted: #8b949e;
+  --faint: #7d8590;
+  --line: #21262d;
+  --mono: 'Inconsolata Variable', Consolas, ui-monospace, monospace;
+  --gutter: clamp(1.25rem, 6vw, 6rem);
+  --measure: 62ch;
+  color-scheme: dark;
 }
 
 *,
@@ -69,64 +21,44 @@
 }
 
 html {
-  scroll-behavior: smooth;
-  scroll-padding-top: var(--hud-h);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--mono);
   -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 6rem;
 }
 
-html[data-intro='on'] {
-  overflow: hidden;
-}
-
-/* The colour behind the page is what shows when the scroll bounces past an edge. Set from script
-   while the dark closing section is on screen, so the bounce at the bottom continues it. */
-html[data-edge='dark'] {
-  background: var(--ink);
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 1.0625rem;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
-
-/* Paper grain over the whole page */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  /* Black at this opacity darkens exactly as a multiply blend would, without making the browser blend the whole page on every frame */
-  opacity: 0.07;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1,
 h2,
 h3,
 p,
-ul,
 ol,
+ul,
 dl,
-dd {
+dd,
+figure,
+blockquote {
   margin: 0;
 }
 
-ul,
-ol {
+ol,
+ul {
   padding: 0;
   list-style: none;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
 }
 
 button {
@@ -135,58 +67,46 @@ button {
   background: none;
   border: 0;
   padding: 0;
+  cursor: pointer;
 }
 
-svg {
-  display: block;
+a {
+  color: inherit;
+  text-decoration: underline 1px var(--faint);
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color 0.15s ease-out, color 0.15s ease-out;
 }
 
-::selection {
-  background: var(--accent);
-  color: var(--paper);
+a:hover {
+  text-decoration-color: currentColor;
 }
 
 :focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
+  outline: 1px dashed var(--fg);
+  outline-offset: 4px;
 }
 
-@media (pointer: fine) {
-  html {
-    cursor: var(--cursor-default);
-  }
-
-  a,
-  button,
-  label,
-  summary,
-  [role='button'],
-  [data-dialog] {
-    cursor: var(--cursor-active);
-  }
+::selection {
+  background: var(--fg);
+  color: var(--bg);
 }
 
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
+/* Everything that reads sits over the drawing */
+main,
+.foot {
+  position: relative;
+  z-index: 1;
 }
 
 .skip-link {
-  position: fixed;
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: 100;
-  padding: 0.5rem 0.9rem;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-pixel);
+  position: absolute;
+  z-index: 20;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--fg);
+  color: var(--bg);
+  text-decoration: none;
   transform: translateY(-200%);
 }
 
@@ -194,209 +114,43 @@ svg {
   transform: none;
 }
 
-/* ---------- Shared building blocks ---------- */
-
-.px {
-  font-family: var(--font-pixel);
-  font-size: 0.875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
+/* ---------------------------------------------------------------- shared by the sections */
+
+/* Spaced with margin, so a jump to a section lands its title just under the header */
 .section {
-  position: relative;
-  padding: clamp(5rem, 12vh, 9rem) var(--gutter);
+  max-width: calc(var(--measure) + 2 * var(--gutter));
+  margin-top: clamp(5rem, 16vh, 10rem);
+  padding: 0 var(--gutter);
 }
 
-.wrap {
-  width: 100%;
-  max-width: var(--max);
-  margin-inline: auto;
+.section__title {
+  display: flex;
+  gap: 1.25ch;
+  margin-bottom: 2.5rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
-.section-head {
-  display: grid;
-  gap: 0.75rem;
-  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+.n {
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
 }
 
-.section-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  color: var(--accent-ink);
-}
-
-.section-label::before {
-  content: '';
-  width: 0.5rem;
-  height: 0.5rem;
-  background: currentColor;
-}
-
-.section-title {
-  font-family: var(--font-serif);
+.cursor {
+  margin-left: 0.1ch;
   font-weight: 400;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-
-/* DS-style window: dark frame, paper gap, accent inner line */
-.window {
-  background: var(--paper);
-  color: var(--ink);
-  border: 3px solid var(--ink);
-  border-radius: 12px;
-  box-shadow:
-    inset 0 0 0 3px var(--paper),
-    inset 0 0 0 5px var(--accent),
-    6px 6px 0 color-mix(in srgb, var(--ink) 12%, transparent);
-}
-
-/* Selection caret that appears beside the focused/hovered option */
-.caret {
-  position: relative;
-  padding-left: 1.25em;
-}
-
-.caret::before {
-  content: '';
-  position: absolute;
-  left: 0.15em;
-  top: 50%;
-  border: 0.36em solid transparent;
-  border-left: 0.56em solid currentColor;
-  border-right: 0;
-  transform: translateY(-50%);
-  opacity: 0;
-}
-
-.caret:hover::before,
-.caret:focus-visible::before,
-.caret[aria-current='true']::before {
-  opacity: 1;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  padding: 0.55rem 1.1rem 0.55rem 2rem;
-  border: 3px solid var(--ink);
-  border-radius: 10px;
-  background: var(--paper);
-  box-shadow: 4px 4px 0 color-mix(in srgb, var(--ink) 14%, transparent);
-  transition:
-    transform 0.12s ease-out,
-    box-shadow 0.12s ease-out;
-}
-
-.btn.caret::before {
-  left: 0.85em;
-}
-
-.btn--primary {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.btn:hover,
-.btn:focus-visible {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 color-mix(in srgb, var(--ink) 14%, transparent);
-}
-
-.btn:active {
-  transform: translate(4px, 4px);
-  box-shadow: none;
-}
-
-.pixel-art {
-  image-rendering: pixelated;
-}
-
-/* ---------- Dialog (typewriter) ---------- */
-
-.dialog {
-  position: relative;
-  padding: 1.25rem 1.5rem 1.75rem;
-  /* Pressed over and over to move on, which would otherwise select its words */
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.dialog__text {
-  font-family: var(--font-pixel);
-  font-size: clamp(1.1rem, 2.4vw, 1.45rem);
-  line-height: 1.45;
-  min-height: 2.9em;
-}
-
-.dialog__next {
-  position: absolute;
-  right: 1rem;
-  bottom: 0.65rem;
-  width: 2rem;
-  height: 1.5rem;
-  display: grid;
-  place-items: center;
-}
-
-.dialog__next::before {
-  content: '';
-  border: 0.45rem solid transparent;
-  border-top: 0.6rem solid var(--accent);
-  border-bottom: 0;
-  animation: bob 0.7s steps(2) infinite;
-}
-
-.dialog__next::before {
-  opacity: 0;
-}
-
-/* The arrow is tiny, so keyboard focus is drawn around the whole box instead */
-.dialog__next:focus-visible {
-  outline: none;
-}
-
-.dialog:has(.dialog__next:focus-visible) {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.dialog[data-state='waiting'] .dialog__next::before {
-  opacity: 1;
-}
-
-@keyframes bob {
-  50% {
-    transform: translateY(4px);
-  }
-}
-
-/*
- * The background stains drift, slowly enough to stay in the background. They use the standalone
- * translate/rotate/scale properties, so they add to a `transform` set elsewhere (the hero's parallax).
- */
-.drift {
-  animation: drift var(--drift-time, 30s) ease-in-out infinite;
-}
-
-/* A loop through two waypoints rather than a straight there-and-back, swelling and shrinking on the way */
-@keyframes drift {
-  33% {
-    translate: var(--dx, 24%) calc(var(--dy, 24%) * 0.3);
-    rotate: calc(var(--dr, 40deg) * 0.5);
-    scale: 1.14;
-  }
-
-  66% {
-    translate: calc(var(--dx, 24%) * 0.2) var(--dy, 24%);
-    rotate: var(--dr, 40deg);
-    scale: 0.92;
-  }
+  animation: blink 1.1s steps(1) infinite;
 }
 
 @keyframes blink {
@@ -405,120 +159,15 @@ svg {
   }
 }
 
-/* ---------- Stage props: what Alexis walks along, climbs and jumps from ---------- */
-
-/* A prop sits in the right-hand lane unless it says `--left` */
-.stage-prop {
-  display: none;
-  position: absolute;
-  right: calc(var(--lane) - var(--prop-w) / 2);
-  width: var(--prop-w);
-  pointer-events: none;
-}
-
-.stage-prop--left {
-  right: auto;
-  left: calc(var(--lane) - var(--prop-w) / 2);
-}
-
-.stage .stage-prop {
-  display: block;
-}
-
-.ladder {
-  border-inline: 3px solid var(--ink);
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0 calc(5 * var(--px)),
-    var(--ink) calc(5 * var(--px)) calc(6 * var(--px))
-  );
-}
-
-/* A floor he crosses the page on: the same dashed line as the journey's route, from lane to lane */
-.floor {
-  left: calc(var(--lane) - var(--prop-w) / 2);
-  width: auto;
-  height: 4px;
-  background: repeating-linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--ink) 55%, transparent) 0 12px,
-    transparent 12px 20px
-  );
-}
-
-.ledge {
-  height: 6px;
-  right: max(0px, calc(var(--lane) - var(--prop-w) / 2 - 0.75rem));
-  width: calc(var(--prop-w) + 1.5rem);
-  background: var(--accent);
-  box-shadow: inset 0 -2px 0 var(--accent-ink);
-}
-
-.ledge.stage-prop--left {
-  right: auto;
-  left: max(0px, calc(var(--lane) - var(--prop-w) / 2 - 0.75rem));
-}
-
-/* ---------- Guide speech bubble ---------- */
-
-.bubble {
-  position: absolute;
-  z-index: 3;
-  padding: 0.6rem 0.8rem;
-  background: var(--paper);
-  color: var(--ink);
-  border: 3px solid var(--ink);
-  border-radius: 10px;
-  box-shadow: 4px 4px 0 color-mix(in srgb, var(--ink) 14%, transparent);
-  font-family: var(--font-pixel);
-  font-size: 1rem;
-  line-height: 1.35;
-  -webkit-user-select: none;
-  user-select: none;
-  visibility: hidden;
-  opacity: 0;
-  transition:
-    opacity 0.2s steps(2),
-    visibility 0.2s;
-}
-
-.bubble.is-open {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* Tail: a rotated square showing two of its borders */
-.bubble::after {
-  content: '';
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: var(--paper);
-  border: solid var(--ink);
-  border-width: 0 3px 3px 0;
-}
-
-/* ---------- Scroll reveals (only hidden when JS can show them) ---------- */
-
-.js [data-reveal] {
-  opacity: 0;
-  transform: translateY(24px);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+  .cursor {
+    animation: none;
   }
+}
 
-  .js [data-reveal] {
-    opacity: 1;
-    transform: none;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-  }
+.foot {
+  margin-top: clamp(6rem, 18vh, 10rem);
+  padding: 1.5rem var(--gutter) 2.5rem;
+  color: var(--faint);
+  font-size: 0.875rem;
 }

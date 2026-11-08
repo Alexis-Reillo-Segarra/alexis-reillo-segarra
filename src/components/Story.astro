@@ -1,0 +1,66 @@
+---
+import { useTranslations, type Lang } from '../i18n/ui';
+import { milestones, story } from '../data/content';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="section" id="story" aria-labelledby="story-title">
+  <h2 class="section__title" id="story-title"><span class="n">01</span>{t('nav.story')}</h2>
+  <div class="prose">
+    {story[lang].map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+  <h3 class="sr-only">{t('story.timeline')}</h3>
+  <ol class="timeline">
+    {
+      milestones.map(({ period, title, org }) => (
+        <li>
+          <span class="when">{period[lang]}</span>
+          <span class="what">
+            {title[lang]}
+            <span class="where">{org}</span>
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .prose p + p {
+    margin-top: 1.1em;
+  }
+
+  .timeline {
+    margin-top: 3.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 13rem minmax(0, 1fr);
+    gap: 0.25rem 1.5rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .when,
+  .where {
+    color: var(--muted);
+  }
+
+  .where {
+    display: block;
+  }
+
+  @media (max-width: 40rem) {
+    li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

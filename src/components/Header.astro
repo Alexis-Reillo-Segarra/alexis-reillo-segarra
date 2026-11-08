@@ -1,0 +1,121 @@
+---
+import { languages, paths, useTranslations, type Lang } from '../i18n/ui';
+import { profile } from '../data/content';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const sections = [
+  { id: 'story', label: t('nav.story') },
+  { id: 'projects', label: t('nav.projects') },
+  { id: 'contact', label: t('nav.contact') },
+];
+const codes = Object.keys(languages) as Lang[];
+---
+
+<header class="top">
+  <a class="brand" href="#top">{profile.name.toLowerCase()}</a>
+  <nav aria-label={t('nav.sections')}>
+    <ol class="sections">
+      {
+        sections.map(({ id, label }, i) => (
+          <li>
+            <a href={`#${id}`}>
+              <span class="n">0{i + 1}</span> {label}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+  <ul class="langs" aria-label={t('nav.language')}>
+    {
+      codes.map((code) => (
+        <li>
+          <a
+            href={paths[code]}
+            hreflang={code}
+            lang={code}
+            title={languages[code]}
+            aria-current={code === lang ? 'page' : undefined}
+            data-lang>
+            {code}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</header>
+
+<script>
+  // Both languages share the section anchors, so a switch lands on the section being read
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-lang]')) {
+    link.addEventListener('click', () => {
+      link.hash = location.hash;
+    });
+  }
+</script>
+
+<style>
+  .top {
+    position: fixed;
+    z-index: 10;
+    inset: 0 0 auto;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem 2.5rem;
+    padding: 1.25rem var(--gutter) 2.5rem;
+    font-size: 0.9375rem;
+    background: linear-gradient(var(--bg) 62%, rgb(13 17 23 / 0));
+  }
+
+  a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  a:hover,
+  a[aria-current] {
+    color: var(--fg);
+  }
+
+  .brand {
+    margin-right: auto;
+  }
+
+  .sections,
+  .langs {
+    display: flex;
+    gap: 1.75rem;
+  }
+
+  .langs {
+    gap: 0.75rem;
+  }
+
+  .langs li + li::before {
+    content: '/';
+    margin-right: 0.75rem;
+    color: var(--faint);
+  }
+
+  @media (max-width: 48rem) {
+    .top {
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.875rem;
+    }
+
+    .brand,
+    .n {
+      display: none;
+    }
+
+    .sections {
+      gap: 1.25rem;
+    }
+  }
+</style>

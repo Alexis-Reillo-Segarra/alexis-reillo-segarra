@@ -1,0 +1,116 @@
+---
+import { sisyphus } from '../data/sisyphus';
+
+/*
+ * The drawing is set in type rather than shipped as a picture: it stays sharp at any size and weighs a
+ * few kilobytes. Runs of glyphs that share a brightness share a span.
+ */
+const html = sisyphus.glyphs
+  .map((row, r) => {
+    let out = '';
+    let run = '';
+    let level = '0';
+    const flush = () => {
+      out += level === '0' ? run : `<span class="l${level}">${run}</span>`;
+      run = '';
+    };
+    for (let i = 0; i < row.length; i++) {
+      const next = row[i] === ' ' ? '0' : sisyphus.levels[r][i];
+      if (next !== level) {
+        flush();
+        level = next;
+      }
+      run += row[i];
+    }
+    flush();
+    return out;
+  })
+  .join('\n');
+---
+
+<div class="art" aria-hidden="true" data-art style={`--cols: ${sisyphus.cols}; --rows: ${sisyphus.rows}`}>
+  <pre set:html={html} />
+</div>
+
+<script>
+  // The drawing steps back once the reading starts, so the text that scrolls over it stays legible
+  const art = document.querySelector<HTMLElement>('[data-art]');
+  if (art) {
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const read = Math.min(1, scrollY / (innerHeight * 0.75));
+      const rest = parseFloat(getComputedStyle(art).getPropertyValue('--rest'));
+      art.style.opacity = String(1 - read * (1 - rest));
+    };
+    const queue = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(update);
+    };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    update();
+  }
+</script>
+
+<style>
+  /* Sized in glyphs: Inconsolata is half an em wide, and the drawing fits the window either way it runs out */
+  .art {
+    --lh: 1.1;
+    --rest: 0.18; /* opacity once the reading starts */
+    position: fixed;
+    z-index: 0;
+    top: 50%;
+    right: clamp(0rem, 9vw - 3rem, 9rem);
+    translate: 0 -50%;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: min(88svh / (var(--rows) * var(--lh)), 58vw / (var(--cols) * 0.5));
+    line-height: var(--lh);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  pre {
+    margin: 0;
+    font: inherit;
+    text-shadow: 0 0 0.45em rgb(230 237 243 / 0.2);
+  }
+
+  .art :global(.l1) {
+    color: rgb(230 237 243 / 0.14);
+  }
+
+  .art :global(.l2) {
+    color: rgb(230 237 243 / 0.24);
+  }
+
+  .art :global(.l3) {
+    color: rgb(230 237 243 / 0.37);
+  }
+
+  .art :global(.l4) {
+    color: rgb(230 237 243 / 0.52);
+  }
+
+  .art :global(.l5) {
+    color: rgb(230 237 243 / 0.7);
+  }
+
+  .art :global(.l6) {
+    color: rgb(230 237 243 / 0.94);
+  }
+
+  /* Narrow screens: centred in the top half, clear of the name, and further back under the text */
+  @media (max-width: 48rem) {
+    .art {
+      --rest: 0.1;
+      top: 4.5rem;
+      right: auto;
+      left: 50%;
+      translate: -50% 0;
+      font-size: min(52svh / (var(--rows) * var(--lh)), 94vw / (var(--cols) * 0.5));
+    }
+  }
+</style>
