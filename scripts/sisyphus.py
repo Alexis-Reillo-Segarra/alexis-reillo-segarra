@@ -7,8 +7,8 @@ the site's own font, read straight from node_modules.
     python3 -m pip install pillow numpy
     python3 scripts/sisyphus.py path/to/drawing.png
 
-Writes src/data/sisyphus.ts, assets/sisyphus.jpg, public/og.png, public/favicon.png and
-public/apple-touch-icon.png.
+Writes src/data/sisyphus.ts, assets/sisyphus.jpg, and src/assets/og.png, favicon.png and
+apple-touch-icon.png.
 """
 
 import argparse
@@ -204,9 +204,9 @@ def main():
 
     banner = render(place(ink, (2000, 1125), 0.84), 11, rng)
     banner.save(ROOT / 'assets/sisyphus.jpg', quality=92, subsampling=0, optimize=True, progressive=True)
-    preview(ink, rng).save(ROOT / 'public/og.png', optimize=True)
-    icon(banner, 96, rounded=True).save(ROOT / 'public/favicon.png', optimize=True)
-    icon(banner, 180, rounded=False).convert('RGB').save(ROOT / 'public/apple-touch-icon.png', optimize=True)
+    preview(ink, rng).save(ROOT / 'src/assets/og.png', optimize=True)
+    icon(banner, 96, rounded=True).save(ROOT / 'src/assets/favicon.png', optimize=True)
+    icon(banner, 180, rounded=False).convert('RGB').save(ROOT / 'src/assets/apple-touch-icon.png', optimize=True)
 
 
 if __name__ == '__main__':
