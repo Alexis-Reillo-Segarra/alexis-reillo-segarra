@@ -1,6 +1,7 @@
 ---
 import { useTranslations, type Lang } from '../i18n/ui';
 import { profile } from '../data/content';
+import { icons } from '../data/icons';
 
 interface Props {
   lang: Lang;
@@ -8,32 +9,51 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const handle = (url: string) => new URL(url).pathname.replace(/^\/|\/$/g, '');
+const path = (url: string) => new URL(url).pathname.replace(/^\/|\/$/g, '');
+const channels = [
+  { label: 'email', icon: icons.mail, href: `mailto:${profile.email}`, handle: profile.email },
+  { label: 'linkedin', icon: icons.linkedin, href: profile.linkedin, handle: path(profile.linkedin) },
+  { label: 'github', icon: icons.github, href: profile.github, handle: path(profile.github) },
+  { label: 'x', icon: icons.x, href: profile.x, handle: `@${path(profile.x)}` },
+];
 ---
 
 <section class="section" id="contact" aria-labelledby="contact-title">
   <h2 class="section__title" id="contact-title"><span class="n">03</span>{t('nav.contact')}</h2>
   <p class="lead">{t('contact.lead')}</p>
-  <dl class="channels">
-    <div>
-      <dt>email</dt>
-      <dd>
-        <a href={`mailto:${profile.email}`}>{profile.email}</a>
-        <button class="copy" type="button" data-copy={profile.email} data-done={t('contact.copied')}>
-          {t('contact.copy')}
-        </button>
-        <span class="sr-only" role="status" data-copy-status data-message={t('contact.copiedMsg')}></span>
-      </dd>
-    </div>
-    <div>
-      <dt>linkedin</dt>
-      <dd><a href={profile.linkedin} target="_blank" rel="noopener noreferrer">{handle(profile.linkedin)} ↗</a></dd>
-    </div>
-    <div>
-      <dt>github</dt>
-      <dd><a href={profile.github} target="_blank" rel="noopener noreferrer">{handle(profile.github)} ↗</a></dd>
-    </div>
-  </dl>
+  <ul class="channels">
+    {
+      channels.map(({ label, icon, href, handle }) => {
+        const email = href.startsWith('mailto:');
+        return (
+          <li class="channel">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+              <path d={icon} />
+            </svg>
+            <div class="text">
+              <span class="label">{label}</span>
+              <span class="line">
+                <a
+                  class="handle"
+                  href={href}
+                  target={email ? undefined : '_blank'}
+                  rel={email ? undefined : 'noopener noreferrer'}>
+                  {handle}
+                  {!email && <span aria-hidden="true">↗</span>}
+                </a>
+                {email && (
+                  <button class="copy" type="button" data-copy={profile.email} data-done={t('contact.copied')}>
+                    {t('contact.copy')}
+                  </button>
+                  <span class="sr-only" role="status" data-copy-status data-message={t('contact.copiedMsg')} />
+                )}
+              </span>
+            </div>
+          </li>
+        );
+      })
+    }
+  </ul>
 </section>
 
 <script>
@@ -61,37 +81,80 @@ const handle = (url: string) => new URL(url).pathname.replace(/^\/|\/$/g, '');
 
 <style>
   .lead {
-    margin-bottom: 2.5rem;
+    margin-bottom: 2.75rem;
     font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 600;
     line-height: 1.2;
   }
 
   .channels {
-    border-top: 1px solid var(--line);
-  }
-
-  .channels div {
     display: grid;
-    grid-template-columns: 7rem minmax(0, 1fr);
-    gap: 0.25rem 1.5rem;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid var(--line);
+    gap: 1.75rem;
   }
 
-  dt {
+  /* The handle's link stretches over the whole row, icon included; the copy button sits above it */
+  .channel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  /* 48px is two screen pixels to each of the icon's 24: whole numbers keep its pixels square */
+  .icon {
+    flex: none;
+    width: 48px;
+    height: 48px;
     color: var(--muted);
+    transition: color 0.15s ease-out, filter 0.15s ease-out;
   }
 
-  dd {
+  .channel:hover .icon,
+  .channel:focus-within .icon {
+    color: var(--fg);
+    filter: drop-shadow(0 0 6px rgb(230 237 243 / 0.35));
+  }
+
+  .text {
+    display: grid;
+    justify-items: start;
+    min-width: 0;
+  }
+
+  /* The copy button follows the address, and drops under it when the line runs out */
+  .line {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 0.25rem 1.25rem;
+    gap: 0 1.25rem;
+  }
+
+  .label {
+    color: var(--muted);
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+
+  .handle {
+    display: flex;
+    gap: 1ch;
+    line-height: 1.5;
     overflow-wrap: anywhere;
   }
 
+  .handle::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .channel:hover .handle {
+    text-decoration-color: currentColor;
+  }
+
   .copy {
+    position: relative;
+    z-index: 1;
     color: var(--muted);
     transition: color 0.15s ease-out;
   }
@@ -106,11 +169,5 @@ const handle = (url: string) => new URL(url).pathname.replace(/^\/|\/$/g, '');
 
   .copy:hover {
     color: var(--fg);
-  }
-
-  @media (max-width: 30rem) {
-    .channels div {
-      grid-template-columns: minmax(0, 1fr);
-    }
   }
 </style>

@@ -9,6 +9,7 @@ export const profile = {
   email: 'alexisreillo12@gmail.com',
   linkedin: 'https://www.linkedin.com/in/alexis-reillo-segarra',
   github: 'https://github.com/Alexis-Reillo-Segarra',
+  x: 'https://x.com/alexisreillo03',
 };
 
 /** The story, one paragraph per string. */
