@@ -176,19 +176,19 @@ def preview(ink, rng):
     return im
 
 
-def icon(side, rounded):
-    """An `@`, the densest glyph in the drawing, light on the dark canvas."""
-    big = side * 4
-    im = Image.new('RGBA', (big, big), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(im)
-    canvas = tuple((BG * 255).astype(int))
+def icon(banner, side, rounded):
+    """The banner's drawing, cut square around it and shrunk to an icon."""
+    w, h = banner.size
+    # The banner holds the drawing centred at 84% of its height, so a square a little taller takes all of it
+    cut = round(h * 0.9)
+    left, top = (w - cut) // 2, (h - cut) // 2
+    im = banner.crop((left, top, left + cut, top + cut)).resize((side, side), Image.LANCZOS).convert('RGBA')
     if rounded:
-        draw.rounded_rectangle((0, 0, big - 1, big - 1), radius=big * 0.22, fill=canvas)
-    else:
-        draw.rectangle((0, 0, big, big), fill=canvas)
-    draw.text((big / 2, big * 0.47), '@', font=font(round(big * 0.9), 700), anchor='mm',
-              fill=tuple((FG * 255).astype(int)))
-    return im.resize((side, side), Image.LANCZOS)
+        big = side * 4
+        mask = Image.new('L', (big, big), 0)
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, big - 1, big - 1), radius=big * 0.22, fill=255)
+        im.putalpha(mask.resize((side, side), Image.LANCZOS))
+    return im
 
 
 def main():
@@ -205,8 +205,8 @@ def main():
     banner = render(place(ink, (2000, 1125), 0.84), 11, rng)
     banner.save(ROOT / 'assets/sisyphus.jpg', quality=92, subsampling=0, optimize=True, progressive=True)
     preview(ink, rng).save(ROOT / 'public/og.png', optimize=True)
-    icon(64, rounded=True).save(ROOT / 'public/favicon.png', optimize=True)
-    icon(180, rounded=False).convert('RGB').save(ROOT / 'public/apple-touch-icon.png', optimize=True)
+    icon(banner, 96, rounded=True).save(ROOT / 'public/favicon.png', optimize=True)
+    icon(banner, 180, rounded=False).convert('RGB').save(ROOT / 'public/apple-touch-icon.png', optimize=True)
 
 
 if __name__ == '__main__':
