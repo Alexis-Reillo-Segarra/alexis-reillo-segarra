@@ -171,7 +171,7 @@ def preview(ink, rng):
     im = render(place(ink, (1200, 630), 0.86, centre_x=0.72), 7, rng)
     draw = ImageDraw.Draw(im)
     draw.text((72, 66), 'alexisreillo.dev', font=font(24, 500), fill=MUTED)
-    draw.text((72, 452), 'Alexis Reillo Segarra', font=font(50, 600), fill=tuple((FG * 255).astype(int)))
+    draw.text((72, 452), 'Alexis Reillo', font=font(50, 600), fill=tuple((FG * 255).astype(int)))
     draw.text((72, 522), 'FullStack Developer · AI Engineer', font=font(26, 400), fill=MUTED)
     return im
 

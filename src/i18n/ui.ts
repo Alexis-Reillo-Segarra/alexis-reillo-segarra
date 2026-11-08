@@ -6,7 +6,7 @@ export const paths: Record<Lang, string> = { en: '/', es: '/es/' };
 export const ui = {
   es: {
     'meta.description':
-      'Alexis Reillo Segarra, FullStack Developer y AI Engineer en Alicante: mi historia y mis proyectos de machine learning.',
+      'Alexis Reillo, FullStack Developer y AI Engineer en Alicante: mi historia y mis proyectos de machine learning.',
     'nav.skip': 'Saltar al contenido',
     'nav.sections': 'Secciones',
     'nav.language': 'Idioma',
@@ -26,7 +26,7 @@ export const ui = {
   },
   en: {
     'meta.description':
-      'Alexis Reillo Segarra, FullStack Developer and AI Engineer based in Alicante: my story and my machine learning projects.',
+      'Alexis Reillo, FullStack Developer and AI Engineer based in Alicante: my story and my machine learning projects.',
     'nav.skip': 'Skip to content',
     'nav.sections': 'Sections',
     'nav.language': 'Language',

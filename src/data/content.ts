@@ -3,7 +3,7 @@ import type { Lang } from '../i18n/ui';
 type Localized = Record<Lang, string>;
 
 export const profile = {
-  name: 'Alexis Reillo Segarra',
+  name: 'Alexis Reillo',
   role: 'FullStack Developer · AI Engineer',
   location: 'Alicante',
   email: 'alexisreillo12@gmail.com',
