@@ -1,31 +1,9 @@
-software should feel good to use.
+<p align="center">
+  <img src="assets/lake-verity.jpg" width="100%" alt="El Lago Veraz de Pokémon Perla dibujado en ASCII de colores sobre la escena difuminada: el bosque de pinos, la isla con la Caverna Veraz y un destello rosa sobre el agua.">
+</p>
 
-```text
-        ^     ^    ^      ^    ^     ^      ^    ^     ^      ^
-   ^   /|\   /|\  /|\    /|\  /|\   /|\    /|\  /|\   /|\    /|\   ^
-  /|\  /|\  //|\\ /|\   //|\\ /|\  //|\\  //|\\ /|\  //|\\  //|\\ /|\
-  /|\   |     |    |      |    |     |      |    |     |      |   /|\
-   |   .-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-.    |
-  /|\ /   ~      ~~       ~        ~~        ~       ~~     ~   \  /|\
-   | |  ~~    ~       ~~      .-~~~~~~~~-.     ~~       ~    ~~  |  |
-  /|\|     ~      ~~      ~  /  ,------,  \  ~      ~~     ~     | /|\
-   | |  ~      ~       ~~   |  /   ..   \  |    ~~      ~     ~  |  |
-  /|\|     ~~      ~       ~|  |  (  )  |  |~       ~      ~~    | /|\
-   | |  ~      ~~      ~     \  '------'  /     ~      ~~     ~  |  |
-  /|\ \    ~~      ~      ~~  '-.______.-'  ~~      ~       ~~  /  /|\
-   |   '.     ~       ~~      ~         ~       ~~      ~     .'    |
-  /|\    '-.___~~_____~______~~_____~______~~_____~______~~.-'     /|\
-   |   . . .  .  . .   . .  .  |      |  .  . .   . .  .  . . .     |
-  /|\    .  .    .   .   .   . |      |  .    .   .   .    .  .    /|\
-   |   "  "   "    "   "   "  [========]   "    "   "    "   "  "   |
+<p align="center"><sub>~ L A G O &nbsp; V E R A Z ~</sub></p>
 
-                        ~  L A G O   V E R A Z  ~
-                 donde todo empieza... ¿has visto algo moverse?
-```
+<br>
 
-<a href="https://placefile.cnrad.workers.dev/u/ALEXIS/tap">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://placefile.cnrad.workers.dev/u/ALEXIS/canvas.svg?theme=dark">
-    <img ismap src="https://placefile.cnrad.workers.dev/u/ALEXIS/canvas.svg?theme=light" width="846" alt="Shared pixel canvas. Click a square to toggle it.">
-  </picture>
-</a>
+<h3 align="center">Alexis Reillo Segarra</h3>
