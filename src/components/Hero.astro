@@ -15,7 +15,7 @@ const t = useTranslations(lang);
   <p class="role">{profile.role} <span class="place"><span class="n">—</span> {profile.location}</span></p>
   <figure class="quote">
     <blockquote><p>{t('hero.quote')}</p></blockquote>
-    <figcaption>Albert Camus</figcaption>
+    <figcaption>{t('hero.quoteAuthor')}</figcaption>
   </figure>
 </section>
 
@@ -46,10 +46,11 @@ const t = useTranslations(lang);
     white-space: nowrap;
   }
 
+  /* The author under the words, and narrow enough to stay clear of the drawing */
   .quote {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 1.25ch;
+    display: grid;
+    gap: 0.25rem;
+    max-width: 36rem;
     margin-top: clamp(2.5rem, 8vh, 4.5rem);
     color: var(--faint);
     font-size: 0.9375rem;
