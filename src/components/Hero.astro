@@ -12,7 +12,7 @@ const t = useTranslations(lang);
 
 <section class="hero" id="top">
   <h1>{profile.name}<span class="cursor" aria-hidden="true">_</span></h1>
-  <p class="role">{profile.role} <span class="place"><span class="n">—</span> {profile.location}</span></p>
+  <p class="role">{profile.role}</p>
   <figure class="quote">
     <blockquote><p>{t('hero.quote')}</p></blockquote>
     <figcaption>{t('hero.quoteAuthor')}</figcaption>
@@ -39,11 +39,6 @@ const t = useTranslations(lang);
     margin-top: 1.25rem;
     color: var(--muted);
     font-size: clamp(1rem, 1.5vw, 1.1875rem);
-  }
-
-  /* The dash travels with the place when the line wraps */
-  .place {
-    white-space: nowrap;
   }
 
   /* The author under the words, and narrow enough to stay clear of the drawing */

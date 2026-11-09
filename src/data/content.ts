@@ -5,7 +5,6 @@ type Localized = Record<Lang, string>;
 export const profile = {
   name: 'Alexis Reillo',
   role: 'FullStack Developer · AI Engineer',
-  location: 'Alicante',
   email: 'alexisreillo12@gmail.com',
   linkedin: 'https://www.linkedin.com/in/alexis-reillo-segarra',
   github: 'https://github.com/Alexis-Reillo-Segarra',
