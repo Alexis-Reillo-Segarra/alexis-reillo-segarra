@@ -21,6 +21,7 @@ export const ui = {
     'projects.demo': 'demo',
     'projects.writeup': 'artículo',
     'contact.lead': '¿Hablamos?',
+    'loader.label': 'Cargando',
   },
   en: {
     'meta.description':
@@ -39,6 +40,7 @@ export const ui = {
     'projects.demo': 'demo',
     'projects.writeup': 'write-up',
     'contact.lead': 'Shall we talk?',
+    'loader.label': 'Loading',
   },
 } as const;
 

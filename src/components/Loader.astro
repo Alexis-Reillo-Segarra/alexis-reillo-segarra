@@ -1,0 +1,70 @@
+---
+import { useTranslations, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<script is:inline>
+  // Decided before the first paint, and only once a visit: a switch of language shouldn't replay it
+  try {
+    if (!sessionStorage.getItem('intro') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('intro');
+      sessionStorage.setItem('intro', '1');
+    }
+  } catch {}
+</script>
+
+<!-- A bare canvas: the drawing itself (Art.astro) rises above it and draws itself in -->
+<div class="loader" role="status" aria-label={t('loader.label')}></div>
+
+<script>
+  // The page comes in once the drawing is whole and the page has arrived, or after a while regardless
+  const root = document.documentElement;
+  if (root.classList.contains('intro')) {
+    const drawn = new Promise((resolve) => {
+      document.addEventListener('art:drawn', resolve, { once: true });
+      setTimeout(resolve, 4000);
+    });
+    const loaded = new Promise((resolve) => {
+      if (document.readyState === 'complete') resolve(null);
+      else addEventListener('load', resolve, { once: true });
+    });
+    Promise.all([drawn, loaded]).then(() => {
+      setTimeout(() => {
+        root.classList.add('intro--out');
+        // Timed rather than tied to transitionend, which a background tab may never send
+        setTimeout(() => root.classList.remove('intro', 'intro--drawing', 'intro--out'), 600);
+      }, 350);
+    });
+  }
+</script>
+
+<style>
+  .loader {
+    display: none;
+  }
+
+  :global(html.intro) .loader {
+    position: fixed;
+    z-index: 30;
+    inset: 0;
+    display: block;
+    background: var(--bg);
+    transition: opacity 0.6s ease-out, visibility 0.6s;
+  }
+
+  :global(html.intro--out) .loader {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* The page underneath stays still until the drawing is done */
+  :global(html.intro) body {
+    overflow: hidden;
+  }
+</style>
